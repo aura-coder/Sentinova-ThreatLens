@@ -75,15 +75,15 @@ async function saveIndicator() {
   if (!open || !indicator) return null;
 
   return (
-    <div className="fixed top-0 right-0 h-screen w-[420px] bg-[#111827] border-l border-gray-700 shadow-2xl z-50 p-6 overflow-y-auto">
+    <div className="fixed top-0 right-0 h-screen w-[420px] bg-hero-bg border-l border-border shadow-2xl z-50 p-6 overflow-y-auto">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-white">
+        <h2 className="text-2xl font-semibold text-foreground">
           Indicator Details
         </h2>
 
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-white text-2xl"
+          className="text-muted-foreground hover:text-foreground text-2xl"
         >
           ✕
         </button>
@@ -92,34 +92,34 @@ async function saveIndicator() {
       <div className="space-y-5">
 
         <div>
-          <p className="text-gray-400 text-sm">Indicator</p>
-          <p className="text-white break-all text-lg">
+          <p className="text-muted-foreground text-sm">Indicator</p>
+          <p className="text-foreground break-all text-lg font-mono">
             {indicator.value}
           </p>
         </div>
 
         <div>
-          <p className="text-gray-400 text-sm">Type</p>
-          <p className="text-white">{indicator.type}</p>
+          <p className="text-muted-foreground text-sm">Type</p>
+          <p className="text-foreground">{indicator.type}</p>
         </div>
 
         <div>
-          <p className="text-gray-400 text-sm">Severity</p>
-          <p className="text-white">{indicator.severity_score}</p>
+          <p className="text-muted-foreground text-sm">Severity</p>
+          <p className="text-foreground">{indicator.severity_score}</p>
         </div>
 
         <div>
-          <p className="text-gray-400 text-sm">Confidence</p>
-          <p className="text-white">{indicator.confidence}</p>
+          <p className="text-muted-foreground text-sm">Confidence</p>
+          <p className="text-foreground">{indicator.confidence}</p>
         </div>
 
         <div>
-          <p className="text-gray-400 text-sm mb-2">TLP</p>
+          <p className="text-muted-foreground text-sm mb-2">TLP</p>
 
           <select
             value={tlp}
             onChange={(e) => setTlp(e.target.value)}
-            className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2"
+            className="w-full rounded-md bg-background border border-border text-foreground px-3 py-2"
           >
             <option value="clear">Clear</option>
             <option value="green">Green</option>
@@ -129,12 +129,12 @@ async function saveIndicator() {
         </div>
 
         <div>
-          <p className="text-gray-400 text-sm mb-2">Status</p>
+          <p className="text-muted-foreground text-sm mb-2">Status</p>
 
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2"
+            className="w-full rounded-md bg-background border border-border text-foreground px-3 py-2"
           >
             <option value="active">Active</option>
             <option value="under_review">Under Review</option>
@@ -144,21 +144,21 @@ async function saveIndicator() {
         </div>
 
         <div>
-          <p className="text-gray-400 text-sm mb-2">Analyst Notes</p>
+          <p className="text-muted-foreground text-sm mb-2">Analyst Notes</p>
 
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={5}
             placeholder="Add investigation notes..."
-            className="w-full rounded-lg bg-gray-800 border border-gray-700 text-white px-3 py-2 resize-none"
+            className="w-full rounded-md bg-background border border-border text-foreground px-3 py-2 resize-none placeholder:text-muted-foreground"
           />
         </div>
 
               <button
                   onClick={saveIndicator}
                   disabled={saving}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 text-white font-medium py-3 rounded-lg transition-colors"
+                  className="w-full bg-primary hover:brightness-110 disabled:bg-secondary disabled:text-muted-foreground text-primary-foreground font-medium py-3 rounded-md transition-colors"
               >
                   {saving ? "Saving..." : "Save Changes"}
               </button>

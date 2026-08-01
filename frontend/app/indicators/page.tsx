@@ -157,17 +157,38 @@ export default function IndicatorsPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Indicators</h1>
-        <p className="text-sm text-gray-400 mt-1">Full searchable list of ingested threat indicators</p>
+        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Indicators</h1>
+        <p className="text-sm text-muted-foreground mt-1">Full searchable list of ingested threat indicators</p>
       </div>
 
       <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={async () => {
+            const params = new URLSearchParams();
+            if (typeFilter !== "all") params.set("type", typeFilter);
+            const res = await apiFetch(`/api/v1/indicators/export?${params.toString()}`);
+            if (!res.ok) {
+              alert("Export failed.");
+              return;
+            }
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "indicators_export.csv";
+            a.click();
+            window.URL.revokeObjectURL(url);
+          }}
+          className="px-4 py-2.5 rounded-md text-xs font-medium bg-secondary/40 border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all shrink-0"
+        >
+          Export CSV
+        </button>
         <input
           type="text"
           placeholder="Search by value (e.g. an IP, domain, or hash)..."
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="flex-1 glass rounded-2xl px-4 py-2.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+          className="flex-1 bg-secondary/40 border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
         />
         <div className="flex gap-1.5 flex-wrap">
           {TYPE_FILTERS.map((t) => (
@@ -177,10 +198,10 @@ export default function IndicatorsPage() {
                 setTypeFilter(t);
                 setPage(1);
               }}
-              className={`px-3 py-2.5 rounded-2xl text-xs font-medium transition-all ${
+              className={`px-3 py-2.5 rounded-md text-xs font-medium transition-all border ${
                 typeFilter === t
-                  ? "glass-strong text-blue-300 shadow-inner"
-                  : "glass text-gray-400 hover:text-gray-200"
+                  ? "bg-primary/10 text-primary border-primary/40"
+                  : "bg-secondary/40 border-border text-muted-foreground hover:text-foreground"
               }`}
             >
               {t}
@@ -188,10 +209,10 @@ export default function IndicatorsPage() {
           ))}
           <button
             onClick={handleCorrelatedToggle}
-            className={`px-3 py-2.5 rounded-2xl text-xs font-medium transition-all ${
+            className={`px-3 py-2.5 rounded-md text-xs font-medium transition-all border ${
               correlatedOnly
-                ? "bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-inner"
-                : "glass text-gray-400 hover:text-gray-200"
+                ? "bg-primary/10 text-primary border-primary/40"
+                : "bg-secondary/40 border-border text-muted-foreground hover:text-foreground"
             }`}
           >
             Correlated (2+ feeds)
@@ -199,7 +220,7 @@ export default function IndicatorsPage() {
         </div>
       </div>
 
-      <div className="text-xs text-gray-400 mb-3">
+      <div className="text-xs text-muted-foreground mb-3">
         {isBusy
           ? "Loading..."
           : `Showing ${paginated.length ? (page - 1) * PAGE_SIZE + 1 : 0}–${
@@ -214,12 +235,12 @@ export default function IndicatorsPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading indicators...</p>
+        <p className="text-muted-foreground">Loading indicators...</p>
       ) : (
-        <div className="glass rounded-3xl overflow-hidden shadow-xl shadow-black/20">
+        <div className="bg-secondary/40 border border-border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="text-gray-400 text-left">
-              <tr className="border-b border-white/10">
+            <thead className="text-muted-foreground text-left">
+              <tr className="border-b border-border">
                 <th className="p-4 font-medium">Score</th>
                 <th className="p-4 font-medium">Indicator</th>
                 <th className="p-4 font-medium">Type</th>
@@ -236,30 +257,30 @@ export default function IndicatorsPage() {
                     setSelectedIndicator(ind);
                     setDrawerOpen(true);
                   }}
-                  className="border-t border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
+                  className="border-t border-border hover:bg-white/5 transition-colors cursor-pointer"
                 >
                   <td className="p-4">
-                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${severityBadge(ind.severity_score)}`}>
+                    <span className={`px-2 py-1 rounded-md text-xs font-medium ${severityBadge(ind.severity_score)}`}>
                       {ind.severity_score}
                     </span>
                   </td>
-                  <td className="p-4 text-gray-200 break-all max-w-md">{ind.value}</td>
-                  <td className="p-4 text-gray-400">{ind.type}</td>
+                  <td className="p-4 text-foreground/90 break-all max-w-md">{ind.value}</td>
+                  <td className="p-4 text-muted-foreground uppercase tracking-wide text-xs">{ind.type}</td>
                   <td className="p-4">
-                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${tlpBadge(ind.tlp)}`}>
+                    <span className={`px-2 py-1 rounded-md text-xs font-medium ${tlpBadge(ind.tlp)}`}>
                       {ind.tlp}
                     </span>
                   </td>
-                  <td className="p-4 text-gray-400">{ind.status}</td>
+                  <td className="p-4 text-muted-foreground">{ind.status}</td>
                   <td className="p-4">
                     {ind.seen_in_feeds && ind.seen_in_feeds.length >= 2 ? (
-                      <span className="px-2 py-1 rounded-lg text-xs font-medium bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                      <span className="px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30">
                         {ind.seen_in_feeds.join(" + ")}
                       </span>
                     ) : ind.seen_in_feeds && ind.seen_in_feeds.length === 1 ? (
-                      <span className="text-xs text-gray-500">{ind.seen_in_feeds[0]}</span>
+                      <span className="text-xs text-muted-foreground">{ind.seen_in_feeds[0]}</span>
                     ) : (
-                      <span className="text-xs text-gray-600">—</span>
+                      <span className="text-xs text-muted-foreground/50">—</span>
                     )}
                   </td>
                 </tr>
@@ -270,18 +291,18 @@ export default function IndicatorsPage() {
       )}
 
       {!loading && totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 glass rounded-2xl px-4 py-3">
+        <div className="flex items-center justify-between mt-4 bg-secondary/40 border border-border rounded-lg px-4 py-3">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-2 rounded-xl text-xs font-medium text-gray-300 hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-2 rounded-md text-xs font-medium text-muted-foreground hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             Previous
           </button>
 
-          <div className="flex items-center gap-2 text-xs text-gray-400">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>Page {page} of {totalPages}</span>
-            <span className="text-gray-600">|</span>
+            <span className="text-border">|</span>
             <span>Jump to</span>
             <input
               type="number"
@@ -296,7 +317,7 @@ export default function IndicatorsPage() {
                   setPage(value);
                 }
               }}
-              className="w-14 glass rounded-lg px-2 py-1 text-gray-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              className="w-14 bg-background border border-border rounded-md px-2 py-1 text-foreground text-center focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
             <button
               onClick={(e) => {
@@ -305,7 +326,7 @@ export default function IndicatorsPage() {
                 const value = Math.min(totalPages, Math.max(1, Number(input.value) || 1));
                 setPage(value);
               }}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-medium glass-strong text-blue-300 hover:bg-white/5 transition-colors"
+              className="px-2.5 py-1.5 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors"
             >
               Go
             </button>
@@ -314,7 +335,7 @@ export default function IndicatorsPage() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-2 rounded-xl text-xs font-medium text-gray-300 hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-2 rounded-md text-xs font-medium text-muted-foreground hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             Next
           </button>

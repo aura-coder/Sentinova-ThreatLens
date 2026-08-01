@@ -75,45 +75,53 @@ export default function IncidentResponderDashboard() {
     }
   }
 
+  function formatDetails(details: Record<string, unknown>) {
+    const parts: string[] = [];
+    if (details.status) parts.push(`Status → ${String(details.status).replace("_", " ")}`);
+    if (details.tlp) parts.push(`TLP → ${details.tlp}`);
+    if (details.notes) parts.push("Notes updated");
+    return parts.length ? parts.join(" • ") : "Updated";
+  }
+
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Incident Responder</h1>
-        <p className="text-sm text-gray-400 mt-1">Active cases escalated by analysts, awaiting resolution</p>
+        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Incident Responder</h1>
+        <p className="text-sm text-muted-foreground mt-1">Active cases escalated by analysts, awaiting resolution</p>
       </div>
 
       {loading || !data ? (
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-muted-foreground">Loading...</p>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 mb-6">
-            <div className="glass rounded-3xl p-5 shadow-xl shadow-black/20 max-w-xs">
-              <div className="text-xs text-gray-400 mb-1">Active cases</div>
+            <div className="bg-secondary/40 border border-border rounded-lg p-5 max-w-xs">
+              <div className="text-xs text-muted-foreground mb-1">Active cases</div>
               <div className="text-3xl font-semibold text-amber-400">{data.total_cases}</div>
             </div>
           </div>
 
-          <div className="glass rounded-3xl p-5 shadow-xl shadow-black/20 mb-6">
-            <div className="text-sm text-gray-300 mb-4">Cases requiring action</div>
+          <div className="bg-secondary/40 border border-border rounded-lg p-5 mb-6">
+            <div className="text-sm text-muted-foreground mb-4">Cases requiring action</div>
             <div className="space-y-2">
               {data.active_cases.length === 0 ? (
-                <p className="text-gray-500 text-sm py-4 text-center">
+                <p className="text-muted-foreground text-sm py-4 text-center">
                   No open cases — nothing escalated right now.
                 </p>
               ) : (
                 data.active_cases.map((c) => (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between glass rounded-2xl p-3 gap-3"
+                    className="flex items-center justify-between bg-background border border-border rounded-md p-3 gap-3 hover:border-primary/30 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className="px-2 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-400 shrink-0">
+                      <span className="px-2 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 shrink-0">
                         {c.severity_score}
                       </span>
-                      <span className="text-sm text-white font-mono truncate">{c.value}</span>
-                      <span className="text-xs text-gray-500 shrink-0">{c.type}</span>
+                      <span className="text-sm text-foreground font-mono truncate">{c.value}</span>
+                      <span className="text-xs text-muted-foreground uppercase tracking-wide shrink-0">{c.type}</span>
                       {c.notes && (
-                        <span className="text-xs text-gray-500 truncate italic">{c.notes}</span>
+                        <span className="text-xs text-muted-foreground truncate italic">{c.notes}</span>
                       )}
                     </div>
 
@@ -121,14 +129,14 @@ export default function IncidentResponderDashboard() {
                       <button
                         onClick={() => handleResolve(c.id, "active")}
                         disabled={actioningId === c.id}
-                        className="px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.06] text-gray-300 hover:bg-white/[0.12] transition disabled:opacity-40"
+                        className="px-3 py-1.5 rounded-md text-xs font-medium bg-secondary text-muted-foreground hover:bg-nav-button/80 transition disabled:opacity-40"
                       >
                         Reopen (active)
                       </button>
                       <button
                         onClick={() => handleResolve(c.id, "whitelisted")}
                         disabled={actioningId === c.id}
-                        className="px-3 py-1.5 rounded-xl text-xs font-medium bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition disabled:opacity-40"
+                        className="px-3 py-1.5 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition disabled:opacity-40"
                       >
                         Resolve (whitelist)
                       </button>
@@ -139,15 +147,15 @@ export default function IncidentResponderDashboard() {
             </div>
           </div>
 
-          <div className="glass rounded-3xl p-5 shadow-xl shadow-black/20">
-            <div className="text-sm text-gray-300 mb-4">Recent case activity (audit trail)</div>
+          <div className="bg-secondary/40 border border-border rounded-lg p-5">
+            <div className="text-sm text-muted-foreground mb-4">Recent case activity (audit trail)</div>
             <div className="space-y-2">
               {data.recent_escalations.map((entry) => (
-                <div key={entry.id} className="flex items-center justify-between glass rounded-2xl p-3">
-                  <span className="text-xs text-gray-400">
-                    {entry.action} — {JSON.stringify(entry.details)}
+                <div key={entry.id} className="flex items-center justify-between bg-background border border-border rounded-md p-3">
+                  <span className="text-xs text-muted-foreground">
+                    <span className="text-foreground/80 font-mono">{entry.action}</span> — {formatDetails(entry.details)}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground/70 shrink-0 ml-3">
                     {new Date(entry.created_at).toLocaleString()}
                   </span>
                 </div>

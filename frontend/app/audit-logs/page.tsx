@@ -31,18 +31,18 @@ export default function AuditLogsPage() {
   // Badge colors
   const badgeColor = (action: string) => {
     if (action.includes("create"))
-      return "bg-emerald-500/20 text-emerald-300";
+      return "bg-primary/10 text-primary border border-primary/40";
 
     if (action.includes("update"))
-      return "bg-blue-500/20 text-blue-300";
+      return "bg-secondary text-foreground border border-border";
 
     if (action.includes("delete"))
-      return "bg-red-500/20 text-red-300";
+      return "bg-destructive/10 text-destructive border border-destructive/40";
 
     if (action.includes("login"))
-      return "bg-purple-500/20 text-purple-300";
+      return "bg-secondary text-muted-foreground border border-border";
 
-    return "bg-gray-500/20 text-gray-300";
+    return "bg-secondary text-muted-foreground border border-border";
   };
 
   // Format details nicely
@@ -80,11 +80,11 @@ export default function AuditLogsPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-foreground">
           Audit Logs
         </h1>
 
-        <p className="text-gray-400 mt-1">
+        <p className="text-muted-foreground mt-1">
           Track every change performed by analysts.
         </p>
       </div>
@@ -93,17 +93,17 @@ export default function AuditLogsPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search audit logs..."
-        className="glass rounded-xl px-4 py-2 mb-5 w-full text-white"
+        className="bg-secondary/40 border border-border rounded-lg px-4 py-2 mb-5 w-full text-foreground placeholder:text-muted-foreground"
       />
 
       {loading ? (
-        <p className="text-gray-500">
+        <p className="text-muted-foreground">
           Loading...
         </p>
       ) : (
-        <div className="glass rounded-3xl overflow-hidden">
+        <div className="bg-secondary/40 border border-border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="text-gray-400">
+            <thead className="text-muted-foreground">
               <tr>
                 <th className="p-4 text-left">Time</th>
                 <th className="p-4 text-left">Action</th>
@@ -116,15 +116,15 @@ export default function AuditLogsPage() {
               {filtered.map((log) => (
                 <tr
                   key={log.id}
-                  className="border-t border-white/5 hover:bg-white/5 cursor-pointer transition"
+                  className="border-t border-border hover:bg-white/5 cursor-pointer transition"
                 >
-                  <td className="p-4 text-gray-300">
+                  <td className="p-4 text-foreground/80">
                     {new Date(log.created_at).toLocaleString()}
                   </td>
 
                   <td className="p-4">
                     <span
-                      className={`px-2 py-1 rounded-lg text-xs font-medium ${badgeColor(
+                      className={`px-2 py-1 rounded-md text-xs font-medium ${badgeColor(
                         log.action
                       )}`}
                     >
@@ -132,11 +132,11 @@ export default function AuditLogsPage() {
                     </span>
                   </td>
 
-                  <td className="p-4 text-gray-300 capitalize">
+                  <td className="p-4 text-foreground/80 capitalize">
                     {log.resource_type}
                   </td>
 
-                  <td className="p-4 text-gray-400">
+                  <td className="p-4 text-muted-foreground">
                     {formatDetails(log.details)}
                   </td>
                 </tr>

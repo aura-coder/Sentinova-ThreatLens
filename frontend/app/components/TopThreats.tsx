@@ -24,52 +24,32 @@ export default function TopThreats() {
   }, []);
 
   return (
-    <div className="glass rounded-3xl p-6 shadow-xl shadow-black/20">
-
-      <h2 className="text-xl font-semibold text-white mb-5">
+    <div className="bg-secondary/40 border border-border rounded-lg p-6">
+      <h2 className="text-foreground text-xs uppercase tracking-widest font-medium mb-5">
         Top High Severity Indicators
       </h2>
 
-      <div className="space-y-3">
-
+      <div className="space-y-2">
         {items.slice(0, 8).map((ioc) => (
-
           <div
             key={ioc.id}
-            className="flex justify-between items-center rounded-xl bg-white/[0.03] p-3"
+            className="flex justify-between items-center rounded-md bg-background border border-border p-3"
           >
-
             <div className="flex items-center gap-3">
-
-              <AlertTriangle
-                size={18}
-                className="text-red-400"
-              />
-
+              <AlertTriangle size={16} className="text-destructive" />
               <div>
-
-                <p className="text-white font-mono">
-                  {ioc.value}
-                </p>
-
-                <p className="text-xs text-gray-500">
+                <p className="text-foreground font-mono text-sm">{ioc.value}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">
                   {ioc.type}
                 </p>
-
               </div>
-
             </div>
-
-            <span className="px-3 py-1 rounded-lg bg-red-500/20 text-red-300 text-sm font-semibold">
+            <span className="px-2.5 py-1 rounded-md bg-destructive/20 text-destructive text-sm font-semibold">
               {ioc.severity_score}
             </span>
-
           </div>
-
         ))}
-
       </div>
-
     </div>
   );
 }

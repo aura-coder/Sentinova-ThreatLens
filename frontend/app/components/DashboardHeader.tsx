@@ -7,44 +7,23 @@ type Props = {
   subtitle: string;
 };
 
-export default function DashboardHeader({
-  title,
-  subtitle,
-}: Props) {
+export default function DashboardHeader({ title, subtitle }: Props) {
   return (
     <div className="flex justify-between items-center mb-8">
-
       <div>
-        <h1 className="text-4xl font-bold text-white">
-          {title}
-        </h1>
-
-        <p className="text-gray-400 mt-2">
-          {subtitle}
-        </p>
+        <h1 className="text-4xl font-bold text-foreground">{title}</h1>
+        <p className="text-muted-foreground mt-2 font-light">{subtitle}</p>
       </div>
 
-      <div className="glass rounded-2xl px-5 py-4 flex items-center gap-4">
-
-        <ShieldCheck
-          size={30}
-          className="text-emerald-400"
-        />
-
+      <div className="bg-secondary/40 border border-border rounded-lg px-5 py-4 flex items-center gap-4">
+        <ShieldCheck size={28} className="text-primary" />
         <div>
-
-          <div className="text-white font-semibold">
-            All Feeds Operational
-          </div>
-
-          <div className="text-sm text-gray-400">
+          <div className="text-foreground text-sm font-medium">All Feeds Operational</div>
+          <div className="text-xs text-muted-foreground mt-0.5">
             {new Date().toLocaleString()}
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }

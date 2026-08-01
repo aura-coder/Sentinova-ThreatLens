@@ -80,43 +80,43 @@ export default function ThreatFeedsPage() {
   return (
     <div className="p-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-3xl font-bold text-foreground">
           Threat Intelligence Feeds
         </h1>
 
-        <p className="text-gray-400 mt-2">
+        <p className="text-muted-foreground mt-2">
           Live connected cyber threat intelligence sources.
         </p>
       </div>
 
       {!loading && (
         <div className="grid lg:grid-cols-4 gap-5">
-          <div className="glass rounded-2xl p-5">
-            <p className="text-gray-400 text-sm">Total Feeds</p>
+          <div className="bg-secondary/40 border border-border rounded-lg p-5">
+            <p className="text-muted-foreground text-sm">Total Feeds</p>
 
-            <h2 className="text-3xl font-bold text-white mt-2">
+            <h2 className="text-3xl font-bold text-foreground mt-2">
               {feeds.length}
             </h2>
           </div>
 
-          <div className="glass rounded-2xl p-5">
-            <p className="text-gray-400 text-sm">Healthy</p>
+          <div className="bg-secondary/40 border border-border rounded-lg p-5">
+            <p className="text-muted-foreground text-sm">Healthy</p>
 
             <h2 className="text-3xl font-bold text-emerald-400 mt-2">
               {healthyFeeds}
             </h2>
           </div>
 
-          <div className="glass rounded-2xl p-5">
-            <p className="text-gray-400 text-sm">Total Indicators</p>
+          <div className="bg-secondary/40 border border-border rounded-lg p-5">
+            <p className="text-muted-foreground text-sm">Total Indicators</p>
 
-            <h2 className="text-3xl font-bold text-blue-400 mt-2">
+            <h2 className="text-3xl font-bold text-primary mt-2">
               {totalIndicators.toLocaleString()}
             </h2>
           </div>
 
-          <div className="glass rounded-2xl p-5">
-            <p className="text-gray-400 text-sm">Feed Health</p>
+          <div className="bg-secondary/40 border border-border rounded-lg p-5">
+            <p className="text-muted-foreground text-sm">Feed Health</p>
 
             <h2 className="text-3xl font-bold text-emerald-400 mt-2">
               Operational
@@ -129,31 +129,31 @@ export default function ThreatFeedsPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search threat feeds..."
-        className="glass rounded-xl px-4 py-3 w-full text-white mb-4"
+        className="bg-secondary/40 border border-border rounded-lg px-4 py-3 w-full text-foreground mb-4 placeholder:text-muted-foreground"
       />
       {loading ? (
-        <p className="text-gray-400">Loading feeds...</p>
+        <p className="text-muted-foreground">Loading feeds...</p>
       ) : (
         <div className="grid lg:grid-cols-2 gap-6">
           {filteredFeeds.map((feed) => (
             <div
               key={feed.id}
-              className="glass rounded-3xl p-6 shadow-xl shadow-black/20"
+              className="bg-secondary/40 border border-border rounded-lg p-6"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-xl font-semibold text-white">
+                  <h2 className="text-xl font-semibold text-foreground">
                     {feed.name}
                   </h2>
 
-                  <p className="text-gray-400 mt-1">{feed.description}</p>
+                  <p className="text-muted-foreground mt-1">{feed.description}</p>
                 </div>
 
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-medium ${
                     feed.status === "Healthy"
-                      ? "bg-emerald-500/20 text-emerald-300"
-                      : "bg-red-500/20 text-red-300"
+                      ? "bg-primary/20 text-primary"
+                      : "bg-destructive/20 text-destructive"
                   }`}
                 >
                   {feed.status}
@@ -161,25 +161,25 @@ export default function ThreatFeedsPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="glass rounded-xl p-4">
-                  <p className="text-gray-400 text-xs">Indicators</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">
+                <div className="bg-background border border-border rounded-md p-4">
+                  <p className="text-muted-foreground text-xs">Indicators</p>
+                  <h3 className="text-3xl font-bold text-foreground mt-1">
                     {feed.indicator_count.toLocaleString()}
                   </h3>
                 </div>
 
-                <div className="glass rounded-xl p-4">
-                  <p className="text-gray-400 text-xs">Reliability</p>
-                  <h3 className="text-3xl font-bold text-white mt-1">
+                <div className="bg-background border border-border rounded-md p-4">
+                  <p className="text-muted-foreground text-xs">Reliability</p>
+                  <h3 className="text-3xl font-bold text-foreground mt-1">
                     {feed.reliability}%
                   </h3>
                 </div>
               </div>
 
               <div className="mt-6">
-                <p className="text-xs text-gray-500">Last Sync</p>
+                <p className="text-xs text-muted-foreground">Last Sync</p>
 
-                <p className="text-white mt-1">
+                <p className="text-foreground mt-1">
                   {feed.last_sync
                     ? new Date(feed.last_sync).toLocaleString("en-US", {
                         dateStyle: "medium",
@@ -193,16 +193,16 @@ export default function ThreatFeedsPage() {
                 <button
                   onClick={() => syncFeed(feed.name)}
                   disabled={syncing === feed.name}
-                  className={`flex-1 rounded-xl py-2.5 text-white transition ${
+                  className={`flex-1 rounded-md py-2.5 font-medium transition border ${
                     syncing === feed.name
-                      ? "bg-gray-600 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
+                      ? "bg-secondary text-muted-foreground border-border cursor-not-allowed"
+                      : "bg-primary/10 text-primary border-primary/40 hover:bg-primary hover:text-primary-foreground"
                   }`}
                 >
                   {syncing === feed.name ? "Syncing..." : "Sync Now"}
                 </button>
 
-                <button className="flex-1 rounded-xl bg-white/10 hover:bg-white/20 py-2.5 text-white transition">
+                <button className="flex-1 rounded-md bg-secondary hover:bg-nav-button/80 py-2.5 text-foreground transition">
                   Details
                 </button>
               </div>

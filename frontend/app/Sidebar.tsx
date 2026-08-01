@@ -1,57 +1,62 @@
-"use client";
+'use client'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import {
+  LayoutDashboard,
+  ShieldAlert,
+  Database,
+  Search,
+  Settings,
+  Activity,
+} from 'lucide-react'
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-const NAV_ITEMS = [
-  { label: "Overview", href: "/" },
-  { label: "Indicators", href: "/indicators" },
-  { label: "Threat feeds", href: "/threat-feeds" },
-  { label: "Analyst Dashboard", href: "/dashboard/analyst" },
-  { label: "Audit Logs", href: "/audit-logs" }, // <-- New
-  { label: "Executive Dashboard", href: "/dashboard/executive" },
-  { label: "Incident Responder", href: "/dashboard/incident-responder" },
-];
+const navItems = [
+  { name: 'Analyst', href: '/dashboard/analyst', icon: LayoutDashboard },
+  { name: 'Executive', href: '/dashboard/executive', icon: ShieldAlert },
+  { name: 'Incident Response', href: '/dashboard/incident-responder', icon: Activity },
+  { name: 'Indicators', href: '/indicators', icon: Database },
+  { name: 'Threat Hunting', href: '/dashboard/threat-hunting', icon: Search },
+  { name: 'Threat Feeds', href: '/threat-feeds', icon: Search },
+  { name: 'Audit Logs', href: '/audit-logs', icon: Settings },
+]
 
 export default function Sidebar() {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
-    <aside className="w-56 glass-strong p-4 flex flex-col m-3 rounded-3xl shadow-2xl shadow-black/40">
-      <div className="flex items-center gap-2 mb-8 px-1">
-        <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center font-semibold text-white shadow-lg shadow-blue-500/30">
-          T
-        </div>
-
-        <div>
-          <div className="text-sm font-semibold text-white">
-            ThreatLens
-          </div>
-          <div className="text-xs text-gray-400">
-            Cyber Threat Intel
-          </div>
-        </div>
+    <aside className="sticky top-0 h-screen w-60 shrink-0 bg-secondary/40 border-r border-border flex flex-col">
+      <div className="px-6 py-6 border-b border-border">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground uppercase">
+          Threat<span className="text-primary">Lens</span>
+        </h1>
       </div>
 
-      <nav className="flex flex-col gap-1 text-sm">
-        {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href;
-
+      <nav className="flex-1 px-3 py-4 space-y-1">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href
+          const Icon = item.icon
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`px-3 py-2.5 rounded-2xl font-medium transition-all ${
-                active
-                  ? "glass text-blue-300 shadow-inner"
-                  : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all ${
+                isActive
+                  ? 'bg-primary/10 text-primary border-l-2 border-primary font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-nav-button/50 border-l-2 border-transparent'
               }`}
             >
-              {item.label}
+              <Icon size={18} />
+              <span className="uppercase tracking-wide text-xs">{item.name}</span>
             </Link>
-          );
+          )
         })}
       </nav>
+
+      <div className="px-6 py-4 border-t border-border">
+        <p className="text-muted-foreground/60 text-xs font-light">
+          v1.0 · Sentinova
+        </p>
+      </div>
     </aside>
-  );
+  )
 }

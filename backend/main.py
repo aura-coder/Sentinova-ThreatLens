@@ -1,8 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+import csv
+import io
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, case
 from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException
 from scheduler import start_scheduler, stop_scheduler
@@ -133,27 +136,39 @@ def list_indicators(
 
 @app.get("/api/v1/indicators/search")
 def search_indicators(
-    q: str,
+    q: str = "",
+    type: str | None = None,
+    tlp: str | None = None,
+    min_score: int | None = None,
+    max_score: int | None = None,
     size: int = 50,
     current_user: models.User = Depends(deps.get_current_user),
 ):
-    if not q or not q.strip():
-        return {"total": 0, "results": []}
+    must_clauses = []
+
+    if q and q.strip():
+        must_clauses.append({"wildcard": {"value": {"value": f"*{q.lower()}*"}}})
+    if type:
+        must_clauses.append({"term": {"type": type}})
+    if tlp:
+        must_clauses.append({"term": {"tlp": tlp}})
+    if min_score is not None or max_score is not None:
+        range_filter = {}
+        if min_score is not None:
+            range_filter["gte"] = min_score
+        if max_score is not None:
+            range_filter["lte"] = max_score
+        must_clauses.append({"range": {"severity_score": range_filter}})
+
+    if not must_clauses:
+        must_clauses.append({"match_all": {}})
 
     body = {
-        "query": {
-            "wildcard": {
-                "value": {
-                    "value": f"*{q.lower()}*"
-                }
-            }
-        },
+        "query": {"bool": {"must": must_clauses}},
         "size": size,
         "sort": [{"severity_score": "desc"}],
     }
-
     result = es.search(index=INDEX_NAME, body=body)
-
     hits = result["hits"]["hits"]
     return {
         "total": result["hits"]["total"]["value"],
@@ -162,6 +177,54 @@ def search_indicators(
         ],
     }
 
+@app.get("/api/v1/indicators/export")
+def export_indicators(
+    type: str | None = None,
+    tlp: str | None = None,
+    status: str | None = None,
+    min_score: int | None = None,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    query = db.query(models.Indicator)
+
+    if type:
+        query = query.filter(models.Indicator.type == type)
+    if tlp:
+        query = query.filter(models.Indicator.tlp == tlp)
+    if status:
+        query = query.filter(models.Indicator.status == status)
+    if min_score is not None:
+        query = query.filter(models.Indicator.severity_score >= min_score)
+
+    indicators = query.order_by(desc(models.Indicator.severity_score)).limit(5000).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(
+        ["value", "type", "severity_score", "confidence", "tlp", "status", "source_feed", "first_seen", "last_seen"]
+    )
+    for ind in indicators:
+        writer.writerow(
+            [
+                ind.value,
+                ind.type.value if hasattr(ind.type, "value") else ind.type,
+                ind.severity_score,
+                ind.confidence,
+                ind.tlp.value if hasattr(ind.tlp, "value") else ind.tlp,
+                ind.status.value if hasattr(ind.status, "value") else ind.status,
+                ind.source_feed or "",
+                ind.first_seen.isoformat() if ind.first_seen else "",
+                ind.last_seen.isoformat() if ind.last_seen else "",
+            ]
+        )
+
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=indicators_export.csv"},
+    )
 
 @app.get(
     "/api/v1/indicators/{indicator_id}",
@@ -360,6 +423,69 @@ def executive_dashboard(
         "by_type": {t.value: c for t, c in by_type},
         "by_tlp": {t.value: c for t, c in by_tlp},
     }
+
+
+@app.get("/api/v1/dashboard/trends")
+def dashboard_trends(
+    days: int = 14,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+
+    rows = (
+        db.query(
+            func.date(models.Indicator.first_seen).label("day"),
+            func.count(models.Indicator.id).label("total"),
+            func.sum(case((models.Indicator.severity_score >= 80, 1), else_=0)).label("high_severity"),
+        )
+        .filter(models.Indicator.first_seen >= cutoff)
+        .group_by(func.date(models.Indicator.first_seen))
+        .order_by(func.date(models.Indicator.first_seen))
+        .all()
+    )
+
+    series = [
+        {
+            "date": row.day.isoformat() if hasattr(row.day, "isoformat") else str(row.day),
+            "total": row.total,
+            "high_severity": int(row.high_severity or 0),
+        }
+        for row in rows
+    ]
+
+    return {"days": days, "series": series}
+
+
+DEMO_COUNTRIES = [
+    "United States", "China", "Russia", "Brazil", "India",
+    "Germany", "Netherlands", "Vietnam", "Ukraine", "Iran",
+    "United Kingdom", "France", "South Korea", "Indonesia", "Nigeria",
+]
+
+
+@app.get("/api/v1/dashboard/geo")
+def dashboard_geo(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    ip_indicators = (
+        db.query(models.Indicator.value, models.Indicator.severity_score)
+        .filter(models.Indicator.type == models.IndicatorType.ip)
+        .limit(3000)
+        .all()
+    )
+
+    counts: dict[str, int] = {c: 0 for c in DEMO_COUNTRIES}
+    for value, _ in ip_indicators:
+        idx = sum(ord(ch) for ch in value) % len(DEMO_COUNTRIES)
+        counts[DEMO_COUNTRIES[idx]] += 1
+
+    return {
+        "note": "Approximate demo mapping (hash-based), not real IP geolocation.",
+        "counts": counts,
+    }
+
 
 @app.get("/api/v1/dashboard/incident-responder")
 def incident_responder_dashboard(
