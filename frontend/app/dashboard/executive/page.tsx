@@ -45,8 +45,31 @@ export default function ExecutiveDashboard() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Executive Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">Organization-wide threat posture at a glance</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground tracking-tight">Executive Dashboard</h1>
+            <p className="text-sm text-muted-foreground mt-1">Organization-wide threat posture at a glance</p>
+          </div>
+          <button
+            onClick={async () => {
+              const res = await apiFetch("/api/v1/reports/executive-summary");
+              if (!res.ok) {
+                alert("Report generation failed.");
+                return;
+              }
+              const blob = await res.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = "threatlens_executive_summary.pdf";
+              a.click();
+              window.URL.revokeObjectURL(url);
+            }}
+            className="px-4 py-2 rounded-md text-sm font-medium bg-secondary/40 border border-border text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
+          >
+            Download PDF Report
+          </button>
+        </div>
       </div>
 
       {loading || !data ? (

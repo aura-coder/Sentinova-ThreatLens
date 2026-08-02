@@ -1,6 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 import csv
 import io
 from fastapi.security import OAuth2PasswordRequestForm
@@ -485,6 +490,106 @@ def dashboard_geo(
         "note": "Approximate demo mapping (hash-based), not real IP geolocation.",
         "counts": counts,
     }
+
+
+@app.get("/api/v1/reports/executive-summary")
+def executive_summary_pdf(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(deps.get_current_user),
+):
+    total = db.query(models.Indicator).count()
+    active = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.active).count()
+    whitelisted = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.whitelisted).count()
+    high_severity = db.query(models.Indicator).filter(models.Indicator.severity_score >= 80).count()
+    avg_severity = db.query(func.avg(models.Indicator.severity_score)).scalar() or 0
+
+    by_type = (
+        db.query(models.Indicator.type, func.count(models.Indicator.id))
+        .group_by(models.Indicator.type)
+        .all()
+    )
+
+    top_threats = (
+        db.query(models.Indicator)
+        .filter(models.Indicator.severity_score >= 80)
+        .filter(models.Indicator.status == models.IndicatorStatus.active)
+        .order_by(desc(models.Indicator.severity_score))
+        .limit(10)
+        .all()
+    )
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.6 * inch, bottomMargin=0.6 * inch)
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        "TitleGreen", parent=styles["Title"], textColor=colors.HexColor("#1a1a1a")
+    )
+    heading_style = ParagraphStyle(
+        "HeadingGreen", parent=styles["Heading2"], textColor=colors.HexColor("#0a7a1f"), spaceBefore=16
+    )
+
+    elements = []
+    elements.append(Paragraph("ThreatLens — Executive Summary", title_style))
+    elements.append(Paragraph(f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}", styles["Normal"]))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    elements.append(Paragraph("Overview", heading_style))
+    overview_data = [
+        ["Metric", "Value"],
+        ["Total indicators", str(total)],
+        ["Active", str(active)],
+        ["Whitelisted", str(whitelisted)],
+        ["High severity (score >= 80)", str(high_severity)],
+        ["Average severity score", str(round(float(avg_severity), 1))],
+    ]
+    overview_table = Table(overview_data, colWidths=[3 * inch, 2 * inch])
+    overview_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a1a1a")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cccccc")),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f5f5f5")]),
+    ]))
+    elements.append(overview_table)
+
+    elements.append(Paragraph("Indicators by Type", heading_style))
+    type_data = [["Type", "Count"]] + [[t.value, str(c)] for t, c in by_type]
+    type_table = Table(type_data, colWidths=[3 * inch, 2 * inch])
+    type_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a1a1a")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cccccc")),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f5f5f5")]),
+    ]))
+    elements.append(type_table)
+
+    elements.append(Paragraph("Top High-Severity Indicators", heading_style))
+    threat_data = [["Score", "Value", "Type"]] + [
+        [str(i.severity_score), i.value[:50], i.type.value] for i in top_threats
+    ]
+    threat_table = Table(threat_data, colWidths=[0.8 * inch, 3.2 * inch, 1 * inch])
+    threat_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a1a1a")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cccccc")),
+        ("FONTSIZE", (0, 0), (-1, -1), 8),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f5f5f5")]),
+    ]))
+    elements.append(threat_table)
+
+    doc.build(elements)
+    buffer.seek(0)
+
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=threatlens_executive_summary.pdf"},
+    )
 
 
 @app.get("/api/v1/dashboard/incident-responder")
