@@ -93,4 +93,55 @@ The project supports **Manual Sync** to save free-tier API limits. Users can cli
 ---
 
 ## 📝 License
-Internal / Confidential - Built by [Your Name] as a Capstone Project.
+Internal / Confidential - Built by aura-coder as a Capstone Project.
+
+---
+
+## ⚡ Installation & Usage (3 Simple Scripts)
+
+This project uses **3 simple shell scripts** to manage the entire lifecycle. You do not need to manually run `uvicorn` or `npm` commands.
+
+### 1. `./install.sh` (Run this ONCE)
+This is the **one-time setup script**. It:
+1. Checks prerequisites (Python 3, Node.js 20+, Docker).
+2. Sets up Backend: Creates a Python virtual environment and installs all Python dependencies.
+3. Sets up Database: Starts PostgreSQL, Redis, and Elasticsearch using Docker Compose.
+4. Initializes Database: Creates tables, seeds the threat feeds, and creates a default admin user.
+5. Sets up Frontend: Installs all Node.js packages (`npm install`).
+
+*Note: You only need to run this script the first time you clone the repository.*
+
+### 2. `./start.sh` (Run this EVERY TIME you want to start)
+This script starts all services in the background:
+1. Starts Docker infrastructure: `docker-compose up -d db redis elasticsearch`
+2. Starts Backend: Activates the virtual environment and runs `uvicorn` on port `8000` (logs saved to `backend.log`).
+3. Starts Frontend: Runs `npm run dev` on port `3000` (logs saved to `frontend.log`).
+
+After running, you can access:
+- **Frontend UI**: http://localhost:3000
+- **Backend API Documentation**: http://localhost:8000/docs
+
+### 3. `./stop.sh` (Run this EVERY TIME you want to stop)
+This script cleanly shuts down all services:
+1. Stops Docker infrastructure.
+2. Kills any running `uvicorn` and `next dev` processes.
+3. Cleans up log files.
+
+---
+
+## 🔑 Default Login Credentials
+
+After running `install.sh` and `start.sh`, log in with:
+
+- **Email**: `admin@threatlens.local`
+- **Password**: `Admin@123`
+
+---
+
+## 🔒 Note on API Credits
+The project supports **Manual Sync** to save free-tier API limits. Users can click the "Sync" button on the Threat Feeds page to fetch fresh IOCs manually. 
+
+---
+
+## 📝 License
+Internal / Confidential - Built by aura-coder as a Capstone Project.
