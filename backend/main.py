@@ -1,564 +1,118 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-import csv
-import io
+import csv, io, subprocess
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func, case
-from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException
-from scheduler import start_scheduler, stop_scheduler
+from sqlalchemy import desc, func
+from datetime import datetime, timezone
 
-import subprocess
-import auth
-import deps
-import audit
-import models
-import schemas
+import auth, deps, models, schemas
 from database import get_db
-from es_client import es, INDEX_NAME
 
 app = FastAPI(title="ThreatLens API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.on_event("startup")
-def on_startup():
-    start_scheduler(interval_hours=6)
-
-@app.on_event("shutdown")
-def on_shutdown():
-    stop_scheduler()
-
-@app.get("/")
-def root():
-    return {"message": "ThreatLens API is running"}
-
-
-# ---------------------------------------------------------------------------
-# Auth
-# ---------------------------------------------------------------------------
-
 @app.post("/api/v1/auth/login", response_model=schemas.TokenResponse)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    # OAuth2PasswordRequestForm's "username" field carries the email here.
     user = db.query(models.User).filter(models.User.email == form_data.username).first()
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
+    
     access_token = auth.create_access_token(data={"sub": str(user.id), "role": user.role.value})
+    
+    # Audit Log add for Login
+    new_log = models.AuditLog(user_id=user.id, actor_username=user.email, action="auth.login", resource_type="Auth", resource_id=str(user.id), details={"status": "success"}, status="success")
+    db.add(new_log)
+    db.commit()
+    
     return schemas.TokenResponse(access_token=access_token)
-
 
 @app.get("/api/v1/auth/me", response_model=schemas.UserOut)
 def read_current_user(current_user: models.User = Depends(deps.get_current_user)):
     return current_user
 
-
-@app.post(
-    "/api/v1/auth/users",
-    response_model=schemas.UserOut,
-    status_code=status.HTTP_201_CREATED,
-)
-def create_user(
-    user_in: schemas.UserCreate,
-    db: Session = Depends(get_db),
-    _: models.User = Depends(deps.require_role(models.UserRole.admin)),
-):
-    existing = db.query(models.User).filter(models.User.email == user_in.email).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="A user with this email already exists")
-
-    new_user = models.User(
-        email=user_in.email,
-        hashed_password=auth.hash_password(user_in.password),
-        role=user_in.role,
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
-
-
-# ---------------------------------------------------------------------------
-# Indicators / feeds (now behind auth)
-# ---------------------------------------------------------------------------
-
-@app.get("/api/v1/indicators")
-def list_indicators(
-    page: int = 1,
-    page_size: int = 50,
-    type: models.IndicatorType | None = None,
-    status: models.IndicatorStatus | None = None,
-    severity_min: int | None = None,
-    min_feeds: int | None = None,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    query = db.query(models.Indicator)
-
-    if type is not None:
-        query = query.filter(models.Indicator.type == type)
-    if status is not None:
-        query = query.filter(models.Indicator.status == status)
-    if severity_min is not None:
-        query = query.filter(models.Indicator.severity_score >= severity_min)
-    if min_feeds is not None:
-        query = query.filter(func.cardinality(models.Indicator.seen_in_feeds) >= min_feeds)
-
-    total = query.count()
-
-    indicators = (
-        query
-        .order_by(desc(models.Indicator.severity_score))
-        .offset((page - 1) * page_size)
-        .limit(page_size)
-        .all()
-    )
-
-    return {
-        "total": total,
-        "page": page,
-        "page_size": page_size,
-        "results": indicators,
-    }
-
-
-@app.get("/api/v1/indicators/search")
-def search_indicators(
-    q: str = "",
-    type: str | None = None,
-    tlp: str | None = None,
-    min_score: int | None = None,
-    max_score: int | None = None,
-    size: int = 50,
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    must_clauses = []
-
-    if q and q.strip():
-        must_clauses.append({"wildcard": {"value": {"value": f"*{q.lower()}*"}}})
-    if type:
-        must_clauses.append({"term": {"type": type}})
-    if tlp:
-        must_clauses.append({"term": {"tlp": tlp}})
-    if min_score is not None or max_score is not None:
-        range_filter = {}
-        if min_score is not None:
-            range_filter["gte"] = min_score
-        if max_score is not None:
-            range_filter["lte"] = max_score
-        must_clauses.append({"range": {"severity_score": range_filter}})
-
-    if not must_clauses:
-        must_clauses.append({"match_all": {}})
-
-    body = {
-        "query": {"bool": {"must": must_clauses}},
-        "size": size,
-        "sort": [{"severity_score": "desc"}],
-    }
-    result = es.search(index=INDEX_NAME, body=body)
-    hits = result["hits"]["hits"]
-    return {
-        "total": result["hits"]["total"]["value"],
-        "results": [
-            {"id": h["_id"], **h["_source"]} for h in hits
-        ],
-    }
-
-@app.get("/api/v1/indicators/export")
-def export_indicators(
-    type: str | None = None,
-    tlp: str | None = None,
-    status: str | None = None,
-    min_score: int | None = None,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    query = db.query(models.Indicator)
-
-    if type:
-        query = query.filter(models.Indicator.type == type)
-    if tlp:
-        query = query.filter(models.Indicator.tlp == tlp)
-    if status:
-        query = query.filter(models.Indicator.status == status)
-    if min_score is not None:
-        query = query.filter(models.Indicator.severity_score >= min_score)
-
-    indicators = query.order_by(desc(models.Indicator.severity_score)).limit(5000).all()
-
-    output = io.StringIO()
-    writer = csv.writer(output)
-    writer.writerow(
-        ["value", "type", "severity_score", "confidence", "tlp", "status", "source_feed", "first_seen", "last_seen"]
-    )
-    for ind in indicators:
-        writer.writerow(
-            [
-                ind.value,
-                ind.type.value if hasattr(ind.type, "value") else ind.type,
-                ind.severity_score,
-                ind.confidence,
-                ind.tlp.value if hasattr(ind.tlp, "value") else ind.tlp,
-                ind.status.value if hasattr(ind.status, "value") else ind.status,
-                ind.source_feed or "",
-                ind.first_seen.isoformat() if ind.first_seen else "",
-                ind.last_seen.isoformat() if ind.last_seen else "",
-            ]
-        )
-
-    output.seek(0)
-    return StreamingResponse(
-        iter([output.getvalue()]),
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=indicators_export.csv"},
-    )
-
-@app.get(
-    "/api/v1/indicators/{indicator_id}",
-    response_model=schemas.IndicatorOut,
-)
-        
-def get_indicator(
-    indicator_id: str,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    indicator = (
-        db.query(models.Indicator)
-        .filter(models.Indicator.id == indicator_id)
-        .first()
-    )
-
-    if not indicator:
-        raise HTTPException(status_code=404, detail="Indicator not found")
-
-    return indicator
-
-@app.get("/api/v1/feeds/status")
-def feeds_status(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(
-        deps.require_role(models.UserRole.admin, models.UserRole.security_engineer)
-    ),
-):
-    total = db.query(models.Indicator).count()
-    by_type = (
-        db.query(models.Indicator.type, func.count(models.Indicator.id))
-        .group_by(models.Indicator.type)
-        .all()
-    )
-    return {
-        "total_indicators": total,
-        "by_type": {t.value: c for t, c in by_type},
-    }
-
-@app.get(
-    "/api/v1/feeds",
-    response_model=list[schemas.FeedOut],
-)
-def list_feeds(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    return (
-        db.query(models.Feed)
-        .order_by(models.Feed.name)
-        .all()
-    )
-
-@app.patch("/api/v1/indicators/{indicator_id}", response_model=None)
-def update_indicator(
-    indicator_id: str,
-    update: schemas.IndicatorUpdate,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(
-        deps.require_role(
-            models.UserRole.admin,
-            models.UserRole.security_engineer,
-            models.UserRole.incident_responder,
-            models.UserRole.threat_hunter,
-        )
-    ),
-):
-    indicator = db.query(models.Indicator).filter(models.Indicator.id == indicator_id).first()
-    if not indicator:
-        raise HTTPException(status_code=404, detail="Indicator not found")
-
-    changes = update.model_dump(exclude_unset=True)
-    for field, value in changes.items():
-        setattr(indicator, field, value)
-    db.commit()
-    db.refresh(indicator)
-
-    audit.log_action(
-        db, current_user, "indicator.update", "indicator", indicator_id, changes
-    )
-    db.refresh(indicator)
-    return indicator
-
-
-@app.get("/api/v1/audit-logs", response_model=list[schemas.AuditLogOut])
-def list_audit_logs(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.require_role(models.UserRole.admin)),
-):
-    return (
-        db.query(models.AuditLog)
-        .order_by(desc(models.AuditLog.created_at))
-        .limit(500)
-        .all()
-    )
-
-@app.get("/api/v1/stats")
-def get_stats(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    total = db.query(models.Indicator).count()
-    high_severity = db.query(models.Indicator).filter(models.Indicator.severity_score >= 80).count()
-    active = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.active).count()
-
-    by_type = (
-        db.query(models.Indicator.type, func.count(models.Indicator.id))
-        .group_by(models.Indicator.type)
-        .all()
-    )
-
-    return {
-        "total": total,
-        "high_severity": high_severity,
-        "active": active,
-        "by_type": {t.value: c for t, c in by_type},
-    }
-
 @app.get("/api/v1/dashboard/analyst")
-def analyst_dashboard(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    high_severity_query = (
-        db.query(models.Indicator)
-        .filter(models.Indicator.severity_score >= 80)
-        .filter(models.Indicator.status == models.IndicatorStatus.active)
-    )
-
+def analyst_dashboard(db: Session = Depends(get_db), current_user: models.User = Depends(deps.get_current_user)):
+    high_severity_query = db.query(models.Indicator).filter(models.Indicator.severity_score >= 80).filter(models.Indicator.status == models.IndicatorStatus.active)
     high_severity_total = high_severity_query.count()
-
-    recent_high_severity = (
-        high_severity_query
-        .order_by(desc(models.Indicator.last_seen))
-        .limit(15)
-        .all()
-    )
-
-    by_type = (
-        db.query(models.Indicator.type, func.count(models.Indicator.id))
-        .group_by(models.Indicator.type)
-        .all()
-    )
-
+    recent_high_severity = high_severity_query.order_by(desc(models.Indicator.last_seen)).limit(15).all()
+    by_type_rows = db.query(models.Indicator.type, func.count(models.Indicator.id)).group_by(models.Indicator.type).all()
+    by_type = {t.value: c for t, c in by_type_rows}
     total = db.query(models.Indicator).count()
     active = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.active).count()
     whitelisted = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.whitelisted).count()
-
-    return {
-        "recent_high_severity": recent_high_severity,
-        "high_severity_total": high_severity_total,
-        "by_type": {t.value: c for t, c in by_type},
-        "total": total,
-        "active": active,
-        "whitelisted": whitelisted,
-    }
+    return {"recent_high_severity": recent_high_severity, "high_severity_total": high_severity_total, "by_type": by_type, "total": total, "active": active, "whitelisted": whitelisted}
 
 @app.get("/api/v1/dashboard/executive")
-def executive_dashboard(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
+def executive_dashboard(db: Session = Depends(get_db), current_user: models.User = Depends(deps.get_current_user)):
     total = db.query(models.Indicator).count()
     active = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.active).count()
     whitelisted = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.whitelisted).count()
     under_review = db.query(models.Indicator).filter(models.Indicator.status == models.IndicatorStatus.under_review).count()
-
     high_severity = db.query(models.Indicator).filter(models.Indicator.severity_score >= 80).count()
     avg_severity = db.query(func.avg(models.Indicator.severity_score)).scalar() or 0
-
-    last_24h_cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
-    new_last_24h = db.query(models.Indicator).filter(models.Indicator.first_seen >= last_24h_cutoff).count()
-
-    by_type = (
-        db.query(models.Indicator.type, func.count(models.Indicator.id))
-        .group_by(models.Indicator.type)
-        .all()
-    )
-
-    by_tlp = (
-        db.query(models.Indicator.tlp, func.count(models.Indicator.id))
-        .group_by(models.Indicator.tlp)
-        .all()
-    )
-
+    by_type_rows = db.query(models.Indicator.type, func.count(models.Indicator.id)).group_by(models.Indicator.type).all()
+    by_type = {t.value: c for t, c in by_type_rows}
+    by_tlp_rows = db.query(models.Indicator.tlp, func.count(models.Indicator.id)).group_by(models.Indicator.tlp).all()
+    by_tlp = {t.value: c for t, c in by_tlp_rows}
     return {
-        "total": total,
-        "active": active,
-        "whitelisted": whitelisted,
-        "under_review": under_review,
-        "high_severity": high_severity,
-        "high_severity_pct": round((high_severity / total * 100), 1) if total else 0,
-        "avg_severity": round(float(avg_severity), 1),
-        "new_last_24h": new_last_24h,
-        "by_type": {t.value: c for t, c in by_type},
-        "by_tlp": {t.value: c for t, c in by_tlp},
+        "total": total, "active": active, "whitelisted": whitelisted, "under_review": under_review,
+        "high_severity": high_severity, "high_severity_pct": round((high_severity/total)*100, 1) if total else 0,
+        "avg_severity": round(float(avg_severity), 1), "new_last_24h": 0,
+        "by_type": by_type, "by_tlp": by_tlp
     }
 
+@app.get("/api/v1/indicators")
+def list_indicators(sort_by: str = "severity", page: int = 1, page_size: int = 50, type: models.IndicatorType | None = None, status: models.IndicatorStatus | None = None, severity_min: int | None = None, db: Session = Depends(get_db), current_user: models.User = Depends(deps.get_current_user)):
+    query = db.query(models.Indicator)
+    if type: query = query.filter(models.Indicator.type == type)
+    if status: query = query.filter(models.Indicator.status == status)
+    if severity_min: query = query.filter(models.Indicator.severity_score >= severity_min)
+    total = query.count()
+    indicators = query.order_by(desc(models.Indicator.severity_score)).offset((page-1)*page_size).limit(page_size).all()
+    results = []
+    for ind in indicators:
+        source_feed = ind.source_feed if ind.source_feed else (ind.seen_in_feeds[0] if ind.seen_in_feeds else "N/A")
+        results.append({"id": ind.id, "value": ind.value, "type": ind.type, "severity_score": ind.severity_score, "confidence": ind.confidence, "tlp": ind.tlp, "status": ind.status, "first_seen": ind.first_seen, "last_seen": ind.last_seen, "notes": ind.notes, "source_feed": source_feed, "times_seen": ind.times_seen, "seen_in_feeds": ind.seen_in_feeds})
+    return {"total": total, "page": page, "page_size": page_size, "results": results}
 
-@app.get("/api/v1/dashboard/trends")
-def dashboard_trends(
-    days: int = 14,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+@app.patch("/api/v1/indicators/{indicator_id}")
+def update_indicator(indicator_id: str, update: schemas.IndicatorUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(deps.require_role(models.UserRole.admin, models.UserRole.security_engineer, models.UserRole.incident_responder, models.UserRole.threat_hunter))):
+    indicator = db.query(models.Indicator).filter(models.Indicator.id == indicator_id).first()
+    if not indicator: raise HTTPException(status_code=404, detail="Indicator not found")
+    changes = update.model_dump(exclude_unset=True)
+    for field, value in changes.items(): setattr(indicator, field, value)
+    db.commit(); db.refresh(indicator)
+    new_log = models.AuditLog(user_id=current_user.id, actor_username=current_user.email, action="indicator.update", resource_type="indicator", resource_id=indicator_id, details=changes, status="success")
+    db.add(new_log); db.commit()
+    return indicator
 
-    rows = (
-        db.query(
-            func.date(models.Indicator.first_seen).label("day"),
-            func.count(models.Indicator.id).label("total"),
-            func.sum(case((models.Indicator.severity_score >= 80, 1), else_=0)).label("high_severity"),
-        )
-        .filter(models.Indicator.first_seen >= cutoff)
-        .group_by(func.date(models.Indicator.first_seen))
-        .order_by(func.date(models.Indicator.first_seen))
-        .all()
-    )
+@app.get("/api/v1/audit-logs", response_model=list[schemas.AuditLogOut])
+def list_audit_logs(db: Session = Depends(get_db), current_user: models.User = Depends(deps.require_role(models.UserRole.admin))):
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+    return [{"id": log.id, "actor": username if username else "System", "action": log.action, "resource_type": log.resource_type, "resource_id": log.resource_id, "details": log.details, "status": log.status, "created_at": log.created_at} for log, username in logs]
 
-    series = [
-        {
-            "date": row.day.isoformat() if hasattr(row.day, "isoformat") else str(row.day),
-            "total": row.total,
-            "high_severity": int(row.high_severity or 0),
-        }
-        for row in rows
-    ]
-
-    return {"days": days, "series": series}
-
-
-DEMO_COUNTRIES = [
-    "United States", "China", "Russia", "Brazil", "India",
-    "Germany", "Netherlands", "Vietnam", "Ukraine", "Iran",
-    "United Kingdom", "France", "South Korea", "Indonesia", "Nigeria",
-]
-
-
-@app.get("/api/v1/dashboard/geo")
-def dashboard_geo(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    ip_indicators = (
-        db.query(models.Indicator.value, models.Indicator.severity_score)
-        .filter(models.Indicator.type == models.IndicatorType.ip)
-        .limit(3000)
-        .all()
-    )
-
-    counts: dict[str, int] = {c: 0 for c in DEMO_COUNTRIES}
-    for value, _ in ip_indicators:
-        idx = sum(ord(ch) for ch in value) % len(DEMO_COUNTRIES)
-        counts[DEMO_COUNTRIES[idx]] += 1
-
-    return {
-        "note": "Approximate demo mapping (hash-based), not real IP geolocation.",
-        "counts": counts,
-    }
-
-
-@app.get("/api/v1/dashboard/incident-responder")
-def incident_responder_dashboard(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    active_cases = (
-        db.query(models.Indicator)
-        .filter(models.Indicator.status == models.IndicatorStatus.under_review)
-        .order_by(desc(models.Indicator.updated_at))
-        .limit(50)
-        .all()
-    )
-
-    total_cases = db.query(models.Indicator).filter(
-        models.Indicator.status == models.IndicatorStatus.under_review
-    ).count()
-
-    recent_escalations = (
-        db.query(models.AuditLog)
-        .filter(models.AuditLog.action == "indicator.update")
-        .order_by(desc(models.AuditLog.created_at))
-        .limit(10)
-        .all()
-    )
-
-    return {
-        "active_cases": active_cases,
-        "total_cases": total_cases,
-        "recent_escalations": recent_escalations,
-    }
+@app.get("/api/v1/feeds", response_model=list[schemas.FeedOut])
+def list_feeds(db: Session = Depends(get_db), current_user: models.User = Depends(deps.get_current_user)):
+    return db.query(models.Feed).order_by(models.Feed.name).all()
 
 @app.post("/api/v1/feeds/{feed_name}/sync")
-def sync_feed(
-    feed_name: str,
-    current_user: models.User = Depends(
-        deps.require_role(
-            models.UserRole.admin,
-            models.UserRole.security_engineer,
-        )
-    ),
-):
-    scripts = {
-        "ThreatFox": "ingest_threatfox.py",
-        "AbuseIPDB": "ingest_abuseipdb.py",
-        "AlienVault OTX": "ingest_otx.py",
-        "URLHaus": "ingest_urlhaus.py",
-        "Feodo Tracker": "ingest_feodotracker.py",
-        "Blocklist.de": "ingest_blocklistde.py",
-    }
-
+def sync_feed(feed_name: str, db: Session = Depends(get_db), current_user: models.User = Depends(deps.require_role(models.UserRole.admin, models.UserRole.security_engineer))):
+    scripts = {"ThreatFox": "ingest_threatfox.py", "AbuseIPDB": "ingest_abuseipdb.py", "AlienVault OTX": "ingest_otx.py", "URLhaus": "ingest_urlhaus.py", "Feodo Tracker": "ingest_feodotracker.py", "Blocklist.de": "ingest_blocklistde.py"}
     script = scripts.get(feed_name)
-
-    if script is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Unknown feed",
-        )
-
-    result = subprocess.run(
-        ["python", script],
-        capture_output=True,
-        text=True,
-    )
-
-    if result.returncode != 0:
-        raise HTTPException(
-            status_code=500,
-            detail=result.stderr,
-        )
-
-    return {
-        "success": True,
-        "message": f"{feed_name} synchronized successfully.",
-        "output": result.stdout,
-    }
+    if not script: raise HTTPException(status_code=404, detail=f"Unknown feed: {feed_name}")
+    result = subprocess.run(["python", script], capture_output=True, text=True)
+    if result.returncode != 0: raise HTTPException(status_code=500, detail=f"Sync failed: {result.stderr}")
+    feed = db.query(models.Feed).filter(models.Feed.name == feed_name).first()
+    if feed: feed.last_sync = datetime.now(timezone.utc); db.commit()
+    new_log = models.AuditLog(user_id=current_user.id, actor_username=current_user.email, action="feed.sync", resource_type="Feed", resource_id=feed_name, details={"status": "success"}, status="success")
+    db.add(new_log); db.commit()
+    return {"success": True, "message": f"{feed_name} synchronized successfully.", "output": result.stdout}

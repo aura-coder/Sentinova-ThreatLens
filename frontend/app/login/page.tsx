@@ -2,123 +2,150 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { saveToken } from "../lib/auth";
+import { ShieldCheck, Lock, Mail, Eye, EyeOff } from "lucide-react";
+
+const roleMap: Record<string, string> = {
+  "Analyst": "/dashboard/analyst",
+  "Executive": "/dashboard/executive",
+  "Incident Response": "/dashboard/incident-responder",
+  "Indicators": "/indicators",
+  "Threat Hunting": "/dashboard/threat-hunting",
+  "Threat Feeds": "/threat-feeds",
+  "Audit Logs": "/audit-logs",
+};
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@threatlens.local");
+  const [password, setPassword] = useState("Admin@123");
+  const [selectedRole, setSelectedRole] = useState("Analyst");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const body = new URLSearchParams();
-      body.set("username", email);
-      body.set("password", password);
+      const formData = new URLSearchParams();
+      formData.append("username", email);
+      formData.append("password", password);
 
-      const res = await fetch("http://127.0.0.1:8000/api/v1/auth/login", {
+      const res = await fetch("http://localhost:8000/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body,
+        body: formData,
       });
 
-      if (!res.ok) {
-        setError("Incorrect email or password");
-        setLoading(false);
-        return;
-      }
-
+      if (!res.ok) throw new Error("Invalid credentials.");
       const data = await res.json();
-      saveToken(data.access_token);
-      router.push("/");
-    } catch {
-      setError("Could not reach the server");
+
+      if (data.access_token) {
+        localStorage.setItem("threatlens_token", data.access_token);
+        document.cookie = "token=" + data.access_token + "; path=/";
+        router.push(roleMap[selectedRole] || "/dashboard/analyst");
+      } else {
+        throw new Error("Invalid token received");
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred.");
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050608]">
-      <div className="pointer-events-none absolute -top-40 -left-32 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-32 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
-
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
-
-      <form
-        onSubmit={handleSubmit}
-        className="relative z-10 w-full max-w-sm rounded-lg border border-border bg-secondary/40 p-8 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl"
-      >
-
-        <div className="mb-8 flex flex-col items-center text-center">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border border-primary/30 bg-primary/10 shadow-inner">
-            <span className="text-lg font-semibold text-primary">TL</span>
+    <div className="min-h-screen flex items-center justify-center bg-grid bg-[#0a0a0a] relative overflow-hidden">
+      {/* Glow Effect */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#38bdf8]/10 rounded-full blur-[100px] pointer-events-none"></div>
+      
+      <div className="w-full max-w-md p-10 bg-[#121212]/80 backdrop-blur-xl border border-[#30363d] rounded-2xl shadow-2xl relative z-10">
+        
+        <div className="flex justify-center mb-8">
+          <div className="w-16 h-16 rounded-2xl bg-[#38bdf8]/10 border-2 border-[#38bdf8]/40 flex items-center justify-center shadow-lg shadow-[#38bdf8]/20">
+            <ShieldCheck className="text-[#38bdf8]" size={32} />
           </div>
-          <h1 className="text-lg font-medium tracking-tight text-white">
-            Sign in to ThreatLens
+        </div>
+
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-white">
+            THREAT<span className="text-[#38bdf8]">LENS</span>
           </h1>
-          <p className="mt-1 text-xs text-white/40">Cyber Threat Intelligence Platform</p>
+          <p className="text-sm text-[#8b949e] mt-2">Security Operations Center · Enterprise Login</p>
         </div>
 
-        {error && (
-          <div className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-3.5 py-2.5 text-sm text-red-300 backdrop-blur-md">
-            {error}
-          </div>
-        )}
-
-        <div className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/50">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              className="w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder-muted-foreground transition focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
+            <label className="block text-xs font-bold text-[#8b949e] uppercase tracking-wider mb-2">Email</label>
+            <div className="relative">
+              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full bg-[#0a0a0a] border border-[#30363d] rounded-lg pl-10 pr-4 py-3 text-sm text-white placeholder-[#5a6a7a] focus:outline-none focus:border-[#38bdf8] focus:ring-2 focus:ring-[#38bdf8]/20 transition-all"
+                placeholder="admin@threatlens.local"
+              />
+            </div>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/50">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              className="w-full rounded-md border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder-muted-foreground transition focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
+            <label className="block text-xs font-bold text-[#8b949e] uppercase tracking-wider mb-2">Password</label>
+            <div className="relative">
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" />
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full bg-[#0a0a0a] border border-[#30363d] rounded-lg pl-10 pr-10 py-3 text-sm text-white placeholder-[#5a6a7a] focus:outline-none focus:border-[#38bdf8] focus:ring-2 focus:ring-[#38bdf8]/20 transition-all"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b949e] hover:text-white"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#8b949e] uppercase tracking-wider mb-2">Dashboard</label>
+            <select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className="w-full bg-[#0a0a0a] border border-[#30363d] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#38bdf8] focus:ring-2 focus:ring-[#38bdf8]/20 transition-all appearance-none"
+            >
+              {Object.keys(roleMap).map((role) => (
+                <option key={role} value={role}>{role}</option>
+              ))}
+            </select>
+          </div>
+
+          {error && (
+            <div className="text-[#f83b4f] text-xs text-center font-bold bg-[#f83b4f]/10 border border-[#f83b4f]/30 rounded-lg py-2">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#38bdf8] hover:bg-[#2eaadc] text-[#0a0a0a] font-bold text-sm py-3.5 uppercase tracking-wider rounded-lg shadow-lg shadow-[#38bdf8]/20 transition-all disabled:opacity-50"
+          >
+            {loading ? "Authenticating..." : "Sign In"}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center border-t border-[#30363d] pt-6">
+          <p className="text-xs text-[#5a6a7a]">Accounts are provisioned by SOC Administrator.</p>
         </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full rounded-md border border-primary/30 bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition hover:brightness-110 disabled:opacity-50"
-        >
-          {loading ? "Signing in..." : "Sign in"}
-        </button>
-
-        <p className="mt-6 text-center text-[11px] text-white/30">
-          Accounts are provisioned by an administrator.
-        </p>
-      </form>
+      </div>
     </div>
   );
 }

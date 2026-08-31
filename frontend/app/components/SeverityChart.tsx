@@ -6,6 +6,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Cell
 } from "recharts";
 
 type Props = {
@@ -16,9 +17,9 @@ type Props = {
 
 export default function SeverityChart({ total, active, high }: Props) {
   const data = [
-    { name: "Total", value: total },
-    { name: "Active", value: active },
-    { name: "High", value: high },
+    { name: "Total", value: total, color: "var(--primary)" },
+    { name: "Active", value: active, color: "var(--severity-medium)" },
+    { name: "High", value: high, color: "var(--severity-critical)" },
   ];
 
   return (
@@ -27,31 +28,35 @@ export default function SeverityChart({ total, active, high }: Props) {
         Severity Overview
       </h2>
       <ResponsiveContainer width="100%" height="90%">
-        <BarChart data={data}>
+        <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <XAxis
             dataKey="name"
-            stroke="hsl(0 0% 60%)"
-            tick={{ fill: "hsl(0 0% 60%)", fontSize: 12 }}
-            axisLine={{ stroke: "hsl(0 0% 20%)" }}
+            stroke="var(--muted-foreground)"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+            axisLine={{ stroke: "var(--border)" }}
             tickLine={false}
           />
           <YAxis
-            stroke="hsl(0 0% 60%)"
-            tick={{ fill: "hsl(0 0% 60%)", fontSize: 12 }}
-            axisLine={{ stroke: "hsl(0 0% 20%)" }}
+            stroke="var(--muted-foreground)"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+            axisLine={{ stroke: "var(--border)" }}
             tickLine={false}
           />
           <Tooltip
+            cursor={{ fill: "rgba(255, 255, 255, 0.05)" }}
             contentStyle={{
-              backgroundColor: "hsl(0 0% 12%)",
-              border: "1px solid hsl(0 0% 20%)",
+              backgroundColor: "var(--background)",
+              border: "1px solid var(--border)",
               borderRadius: "6px",
-              color: "hsl(0 0% 96%)",
+              color: "var(--foreground)",
             }}
-            labelStyle={{ color: "hsl(0 0% 60%)" }}
-            cursor={{ fill: "hsl(119 99% 46% / 0.06)" }}
+            labelStyle={{ color: "var(--muted-foreground)" }}
           />
-          <Bar dataKey="value" fill="hsl(119 99% 46%)" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

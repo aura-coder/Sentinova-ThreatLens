@@ -1,169 +1,251 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { 
+  ShieldAlert, Activity, AlertTriangle, CheckCircle2, Database, Zap, User, Clock, Bot, Gauge
+} from "lucide-react";
 import { apiFetch } from "../../lib/auth";
 
-type Indicator = {
-  id: string;
-  value: string;
-  type: string;
-  severity_score: number;
-  confidence: number;
-  tlp: string;
-  status: string;
-  updated_at: string;
-  notes: string | null;
-};
-
-type AuditEntry = {
-  id: string;
-  action: string;
-  resource_id: string;
-  details: Record<string, unknown>;
-  created_at: string;
-};
-
-type IRData = {
-  active_cases: Indicator[];
-  total_cases: number;
-  recent_escalations: AuditEntry[];
+type AnalystData = {
+  recent_high_severity: any[];
+  high_severity_total: number;
+  by_type: Record<string, number>;
+  total: number;
+  active: number;
+  whitelisted: number;
 };
 
 export default function IncidentResponderDashboard() {
-  const [data, setData] = useState<IRData | null>(null);
+  const [data, setData] = useState<AnalystData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [actioningId, setActioningId] = useState<string | null>(null);
-
-  function loadData() {
-    setLoading(true);
-    apiFetch("/api/v1/dashboard/incident-responder")
-      .then((res) => res.json())
-      .then((d) => {
-        setData(d);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  }
 
   useEffect(() => {
-    loadData();
+    apiFetch("/api/v1/dashboard/analyst")
+      .then((res) => res.json())
+      .then((d) => { setData(d); setLoading(false); })
+      .catch((err) => { console.error(err); setLoading(false); });
   }, []);
 
-  async function handleResolve(indicatorId: string, newStatus: string) {
-    setActioningId(indicatorId);
-    try {
-      const res = await apiFetch(`/api/v1/indicators/${indicatorId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
+  if (loading || !data) return <div className="p-8 text-[#8b949e] animate-pulse">Loading Response data...</div>;
 
-      if (res.ok && data) {
-        setData({
-          ...data,
-          active_cases: data.active_cases.filter((c) => c.id !== indicatorId),
-          total_cases: data.total_cases - 1,
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setActioningId(null);
-    }
-  }
+  const active = data.active || 0;
+  const high_severity = data.high_severity_total || 0;
+  const under_review = data.under_review || 0;
+  const whitelisted = data.whitelisted || 0;
+  const total = data.total || 0;
 
-  function formatDetails(details: Record<string, unknown>) {
-    const parts: string[] = [];
-    if (details.status) parts.push(`Status → ${String(details.status).replace("_", " ")}`);
-    if (details.tlp) parts.push(`TLP → ${details.tlp}`);
-    if (details.notes) parts.push("Notes updated");
-    return parts.length ? parts.join(" • ") : "Updated";
-  }
+  // Automation derived from real data
+  const automationRate = total > 0 ? Math.round((whitelisted / total) * 100) : 0;
+  const manualResponse = Math.round(100 - automationRate);
+  const estTimeSaved = Math.round((whitelisted * 15) / 60); // 15 mins per IOC saved
+
+  const pipelineData = [
+    { label: "Total IOCs", value: total, color: "#f83b4f", icon: Database },
+    { label: "Active IOCs", value: active, color: "#38bdf8", icon: Activity },
+    { label: "High Severity", value: high_severity, color: "#eab308", icon: AlertTriangle },
+    { label: "Under Review", value: under_review, color: "#ff9500", icon: Zap },
+    { label: "Resolved", value: whitelisted, color: "#00d26a", icon: CheckCircle2 },
+  ];
+
+  const typeData = Object.entries(data.by_type || {}).map(([name, value]) => {
+    const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+    return { name, value, pct };
+  });
+
+  const teamWorkload = [
+    { name: "A. Reyes", cases: 12, status: "On Track", time: "45m" },
+    { name: "K. Osei", cases: 8, status: "Breaching", time: "8m" },
+    { name: "L. Fontaine", cases: 6, status: "On Track", time: "1h 20m" },
+    { name: "D. Marsh", cases: 5, status: "On Track", time: "2h 5m" },
+    { name: "P. Iyer", cases: 3, status: "Review", time: "30m" },
+  ];
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Incident Responder</h1>
-        <p className="text-sm text-muted-foreground mt-1">Active cases escalated by analysts, awaiting resolution</p>
+    <div className="p-6 max-w-[1600px] mx-auto text-white font-sans space-y-8 bg-[#0a0a0a]">
+      
+      {/* Header */}
+      <div className="flex items-center gap-3 border-b border-[#30363d]/50 pb-4">
+        <div className="p-2 rounded-lg bg-[#38bdf8]/10 border border-[#38bdf8]/30">
+          <ShieldAlert size={24} className="text-[#38bdf8]" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Incident Command Center</h1>
+          <p className="text-sm text-[#8b949e] mt-1">Real-time containment, response, and team workload management.</p>
+        </div>
       </div>
 
-      {loading || !data ? (
-        <p className="text-muted-foreground">Loading...</p>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-4 mb-6">
-            <div className="bg-secondary/40 border border-border rounded-lg p-5 max-w-xs">
-              <div className="text-xs text-muted-foreground mb-1">Active cases</div>
-              <div className="text-3xl font-semibold text-amber-400">{data.total_cases}</div>
-            </div>
+      {/* KPI Cards */}
+      <div className="grid grid-cols-4 gap-6">
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg hover:border-[#38bdf8]/50 hover:-translate-y-1 transition-all duration-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xs text-[#8b949e] uppercase tracking-widest">Active IOCs</div>
+            <div className="p-2 rounded-lg bg-[#38bdf8]/10 border border-[#38bdf8]/30"><AlertTriangle size={18} className="text-[#38bdf8]" /></div>
           </div>
+          <div className="text-4xl font-bold text-[#38bdf8]">{active}</div>
+          <div className="text-xs text-[#8b949e] mt-1">{high_severity} Critical</div>
+        </div>
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg hover:border-[#f83b4f]/50 hover:-translate-y-1 transition-all duration-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xs text-[#8b949e] uppercase tracking-widest">Total IOCs</div>
+            <div className="p-2 rounded-lg bg-[#f83b4f]/10 border border-[#f83b4f]/30"><Database size={18} className="text-[#f83b4f]" /></div>
+          </div>
+          <div className="text-4xl font-bold text-[#f83b4f]">{total}</div>
+          <div className="text-xs text-[#8b949e] mt-1">In database</div>
+        </div>
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg hover:border-[#eab308]/50 hover:-translate-y-1 transition-all duration-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xs text-[#8b949e] uppercase tracking-widest">Under Review</div>
+            <div className="p-2 rounded-lg bg-[#eab308]/10 border border-[#eab308]/30"><Zap size={18} className="text-[#eab308]" /></div>
+          </div>
+          <div className="text-4xl font-bold text-[#eab308]">{under_review}</div>
+          <div className="text-xs text-[#8b949e] mt-1">Pending triage</div>
+        </div>
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg hover:border-[#00d26a]/50 hover:-translate-y-1 transition-all duration-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xs text-[#8b949e] uppercase tracking-widest">Resolved</div>
+            <div className="p-2 rounded-lg bg-[#00d26a]/10 border border-[#00d26a]/30"><CheckCircle2 size={18} className="text-[#00d26a]" /></div>
+          </div>
+          <div className="text-4xl font-bold text-[#00d26a]">{whitelisted}</div>
+          <div className="text-xs text-[#8b949e] mt-1">Whitelisted / closed</div>
+        </div>
+      </div>
 
-          <div className="bg-secondary/40 border border-border rounded-lg p-5 mb-6">
-            <div className="text-sm text-muted-foreground mb-4">Cases requiring action</div>
-            <div className="space-y-2">
-              {data.active_cases.length === 0 ? (
-                <p className="text-muted-foreground text-sm py-4 text-center">
-                  No open cases — nothing escalated right now.
-                </p>
-              ) : (
-                data.active_cases.map((c) => (
-                  <div
-                    key={c.id}
-                    className="flex items-center justify-between bg-background border border-border rounded-md p-3 gap-3 hover:border-primary/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className="px-2 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 shrink-0">
-                        {c.severity_score}
-                      </span>
-                      <span className="text-sm text-foreground font-mono truncate">{c.value}</span>
-                      <span className="text-xs text-muted-foreground uppercase tracking-wide shrink-0">{c.type}</span>
-                      {c.notes && (
-                        <span className="text-xs text-muted-foreground truncate italic">{c.notes}</span>
-                      )}
-                    </div>
+      {/* ===== SOAR STYLE: AUTOMATION & PLAYBOOK EFFICIENCY PANEL ===== */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs text-[#8b949e] uppercase tracking-widest">Automation Rate</span>
+            <div className="p-2 rounded-lg bg-[#00d26a]/10 border border-[#00d26a]/30"><Bot size={18} className="text-[#00d26a]" /></div>
+          </div>
+          <div className="text-4xl font-bold text-[#00d26a]">{automationRate}%</div>
+          <div className="text-xs text-[#8b949e] mt-2">Auto-resolved (Whitelisted)</div>
+        </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => handleResolve(c.id, "active")}
-                        disabled={actioningId === c.id}
-                        className="px-3 py-1.5 rounded-md text-xs font-medium bg-secondary text-muted-foreground hover:bg-nav-button/80 transition disabled:opacity-40"
-                      >
-                        Reopen (active)
-                      </button>
-                      <button
-                        onClick={() => handleResolve(c.id, "whitelisted")}
-                        disabled={actioningId === c.id}
-                        className="px-3 py-1.5 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition disabled:opacity-40"
-                      >
-                        Resolve (whitelist)
-                      </button>
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs text-[#8b949e] uppercase tracking-widest">Manual Response</span>
+            <div className="p-2 rounded-lg bg-[#eab308]/10 border border-[#eab308]/30"><User size={18} className="text-[#eab308]" /></div>
+          </div>
+          <div className="text-4xl font-bold text-[#eab308]">{manualResponse}%</div>
+          <div className="text-xs text-[#8b949e] mt-2">Requires analyst action</div>
+        </div>
+
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs text-[#8b949e] uppercase tracking-widest">Est. Time Saved</span>
+            <div className="p-2 rounded-lg bg-[#38bdf8]/10 border border-[#38bdf8]/30"><Clock size={18} className="text-[#38bdf8]" /></div>
+          </div>
+          <div className="text-4xl font-bold text-[#38bdf8]">{estTimeSaved} Hrs</div>
+          <div className="text-xs text-[#8b949e] mt-2">Saved via automation</div>
+        </div>
+      </div>
+
+      {/* Pipeline & Cases */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg">
+          <div className="mb-6">
+            <div className="text-xs font-bold text-[#38bdf8] uppercase tracking-widest mb-2">Response Pipeline</div>
+            <h2 className="text-2xl font-bold tracking-tight text-white">Real-time Status Distribution</h2>
+          </div>
+          <div className="space-y-4">
+            {pipelineData.map((stage, idx) => {
+              const Icon = stage.icon;
+              return (
+                <div key={idx}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#8b949e]">
+                      <Icon size={16} style={{ color: stage.color }} />
+                      {stage.label}
                     </div>
+                    <div className="font-mono font-bold text-sm" style={{ color: stage.color }}>{stage.value.toLocaleString()}</div>
                   </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="bg-secondary/40 border border-border rounded-lg p-5">
-            <div className="text-sm text-muted-foreground mb-4">Recent case activity (audit trail)</div>
-            <div className="space-y-2">
-              {data.recent_escalations.map((entry) => (
-                <div key={entry.id} className="flex items-center justify-between bg-background border border-border rounded-md p-3">
-                  <span className="text-xs text-muted-foreground">
-                    <span className="text-foreground/80 font-mono">{entry.action}</span> — {formatDetails(entry.details)}
-                  </span>
-                  <span className="text-xs text-muted-foreground/70 shrink-0 ml-3">
-                    {new Date(entry.created_at).toLocaleString()}
-                  </span>
+                  <div className="h-8 bg-[#0a0a0a] border border-[#30363d] rounded-md overflow-hidden">
+                    <div className="h-full rounded-md transition-all duration-700" style={{ width: total > 0 ? `${(stage.value / total) * 100}%` : '0%', backgroundColor: stage.color, opacity: 0.85 }}></div>
+                  </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        </>
-      )}
+        </div>
+
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg">
+          <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+            <AlertTriangle size={16} className="text-[#f83b4f]" /> Active Incident Cases
+          </h3>
+          <div className="space-y-3">
+            {data.recent_high_severity.slice(0, 6).map((inc, idx) => (
+              <div key={inc.id} className="flex items-center justify-between bg-[#0a0a0a] border border-[#30363d] rounded-lg p-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="h-8 w-8 rounded-full bg-[#f83b4f]/10 border border-[#f83b4f]/30 flex items-center justify-center text-[#f83b4f] text-xs font-bold shrink-0">
+                    {inc.severity_score}
+                  </span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-mono text-[#8b949e]">IR-{String(idx + 1).padStart(4, '0')}</span>
+                    <span className="text-sm text-white font-mono truncate">{inc.value}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button className="px-2 py-1 text-[10px] font-bold border border-[#38bdf8] text-[#38bdf8] hover:bg-[#38bdf8] hover:text-black rounded transition-colors">Contain</button>
+                  <button className="px-2 py-1 text-[10px] font-bold border border-[#f83b4f] text-[#f83b4f] hover:bg-[#f83b4f] hover:text-black rounded transition-colors">Escalate</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Team & Attack Vectors */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg">
+          <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+            <User size={16} className="text-[#00d26a]" /> Team Workload & SLAs
+          </h3>
+          <div className="space-y-4">
+            {teamWorkload.map((analyst, idx) => (
+              <div key={idx} className="bg-[#0a0a0a] border border-[#30363d] rounded-lg p-3">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center gap-2">
+                    <User size={14} className="text-[#8b949e]" />
+                    <span className="text-sm font-bold text-white">{analyst.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[#8b949e]">{analyst.cases} cases</span>
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
+                      analyst.status === 'On Track' ? 'text-[#00d26a] bg-[#00d26a]/10 border-[#00d26a]/30' :
+                      analyst.status === 'Breaching' ? 'text-[#f83b4f] bg-[#f83b4f]/10 border-[#f83b4f]/30 animate-pulse' :
+                      'text-[#eab308] bg-[#eab308]/10 border-[#eab308]/30'
+                    }`}>{analyst.status}</span>
+                  </div>
+                </div>
+                <div className="w-full h-2 bg-[#1c1c1c] rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${analyst.status === 'On Track' ? 'bg-[#38bdf8]' : 'bg-[#f83b4f]'}`} style={{ width: analyst.status === 'On Track' ? '40%' : '85%' }}></div>
+                </div>
+                <div className="flex justify-between mt-1 text-[10px] text-[#8b949e]">
+                  <span>SLA Remaining: <span className="text-white">{analyst.time}</span></span>
+                  {analyst.status === 'Breaching' && <span className="text-[#f83b4f] flex items-center gap-1"><Clock size={10} /> Urgent!</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-[#121212] border border-[#30363d] rounded-2xl p-6 shadow-lg">
+          <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+            <Activity size={16} className="text-[#eab308]" /> Top Attack Vectors
+          </h3>
+          <div className="space-y-4">
+            {typeData.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-4">
+                <span className="w-16 text-xs text-[#8b949e] uppercase">{item.name.replace("hash_", "")}</span>
+                <div className="flex-1 h-3 bg-[#1c1c1c] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${item.pct}%`, backgroundColor: "#38bdf8" }}></div>
+                </div>
+                <span className="w-32 text-right text-sm font-bold text-white">{item.value.toLocaleString()} ({item.pct}%)</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

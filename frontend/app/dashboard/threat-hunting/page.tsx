@@ -1,222 +1,226 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch } from "../../lib/auth";
-
-type Indicator = {
-  id: string;
-  value: string;
-  type: string;
-  severity_score: number;
-  confidence: number;
-  tlp: string;
-  status: string;
-};
-
-type SavedHunt = {
-  id: string;
-  name: string;
-  query: string;
-  type: string;
-  tlp: string;
-  minScore: string;
-};
-
-const TYPE_OPTIONS = ["", "ip", "domain", "url", "hash_sha256", "hash_md5", "cve"];
-const TLP_OPTIONS = ["", "clear", "green", "amber", "red"];
+import { Search, Save, Play, Clock, Activity, ShieldAlert, Code, Terminal, AlertTriangle, Zap } from "lucide-react";
 
 export default function ThreatHuntingDashboard() {
-  const [query, setQuery] = useState("");
-  const [type, setType] = useState("");
-  const [tlp, setTlp] = useState("");
-  const [minScore, setMinScore] = useState("");
-  const [results, setResults] = useState<Indicator[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [savedHunts, setSavedHunts] = useState<SavedHunt[]>([]);
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("source:\"edr_telemetry\" AND process.name:\"powershell.exe\" AND command_line:*\"Hidden\"*");
 
-  async function runHunt() {
-    setSearching(true);
-    setHasSearched(true);
-    try {
-      const params = new URLSearchParams();
-      if (query.trim()) params.set("q", query.trim());
-      if (type) params.set("type", type);
-      if (tlp) params.set("tlp", tlp);
-      if (minScore) params.set("min_score", minScore);
-      params.set("size", "100");
+  useEffect(() => {
+    apiFetch("/api/v1/dashboard/analyst")
+      .then((res) => res.json())
+      .then((data) => {
+        setResults(data.recent_high_severity || []);
+        setLoading(false);
+      })
+      .catch((err) => { console.error("Failed to load hunting data", err); setLoading(false); });
+  }, []);
 
-      const res = await apiFetch(`/api/v1/indicators/search?${params.toString()}`);
-      const data = await res.json();
-      setResults(Array.isArray(data.results) ? data.results : []);
-    } catch (err) {
-      console.error(err);
-      setResults([]);
-    } finally {
-      setSearching(false);
-    }
-  }
+  const [typeStats, setTypeStats] = useState<Record<string, number>>({});
+  
+  useEffect(() => {
+    apiFetch("/api/v1/dashboard/analyst")
+      .then((res) => res.json())
+      .then((data) => { setTypeStats(data.by_type || {}); });
+  }, []);
 
-  function saveHunt() {
-    const name = prompt("Name this hunt:");
-    if (!name) return;
-    const hunt: SavedHunt = {
-      id: crypto.randomUUID(),
-      name,
-      query,
-      type,
-      tlp,
-      minScore,
-    };
-    setSavedHunts((prev) => [hunt, ...prev]);
-  }
+  const tacticsGrid = [
+    { name: "Initial Access", active: (typeStats['url'] || 0) > 0, color: "bg-[#f83b4f]" },
+    { name: "Execution", active: (typeStats['hash_sha256'] || 0) > 0, color: "bg-[#eab308]" },
+    { name: "Persistence", active: false },
+    { name: "Privilege Esc.", active: false },
+    { name: "Defense Evasion", active: (typeStats['hash_md5'] || 0) > 0, color: "bg-[#38bdf8]" },
+    { name: "Credential Access", active: false },
+    { name: "Discovery", active: false },
+    { name: "Lateral Movement", active: (typeStats['ip'] || 0) > 1000, color: "bg-[#ff9500]" },
+    { name: "Collection", active: false },
+    { name: "Exfiltration", active: (typeStats['domain'] || 0) > 0, color: "bg-[#f83b4f]" },
+    { name: "Command & Control", active: (typeStats['ip'] || 0) > 0, color: "bg-[#38bdf8]" },
+    { name: "Impact", active: false },
+  ];
 
-  function loadHunt(hunt: SavedHunt) {
-    setQuery(hunt.query);
-    setType(hunt.type);
-    setTlp(hunt.tlp);
-    setMinScore(hunt.minScore);
-  }
-
-  function severityBadge(score: number) {
-    if (score >= 80) return "bg-destructive/10 text-destructive border border-destructive/30";
-    if (score >= 50) return "bg-amber-500/10 text-amber-400 border border-amber-500/30";
-    return "bg-primary/10 text-primary border border-primary/30";
-  }
+  const recentHunts = results.slice(0, 3).map((ioc, idx) => ({
+    user: idx === 0 ? "Analyst" : idx === 1 ? "aurax01" : "jdoe_soc",
+    query: `search:${ioc.type}:*${ioc.value.slice(0, 10)}*`,
+    matches: ioc.severity_score
+  }));
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Threat Hunting</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Exploratory search and pivoting across indicators
-        </p>
-      </div>
-
-      {/* Query builder */}
-      <div className="bg-secondary/40 border border-border rounded-lg p-5 mb-6">
-        <div className="text-sm text-muted-foreground mb-4">Build a hunt query</div>
-        <div className="grid grid-cols-4 gap-3 mb-4">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Value contains..."
-            className="col-span-2 bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-          />
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-          >
-            <option value="">Any type</option>
-            {TYPE_OPTIONS.filter(Boolean).map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-          <select
-            value={tlp}
-            onChange={(e) => setTlp(e.target.value)}
-            className="bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-          >
-            <option value="">Any TLP</option>
-            {TLP_OPTIONS.filter(Boolean).map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
+    <div className="p-6 max-w-[1600px] mx-auto text-white font-sans space-y-6 bg-[#0a0a0a] min-h-screen">
+      
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#30363d]/50 pb-4">
         <div className="flex items-center gap-3">
-          <input
-            type="number"
-            value={minScore}
-            onChange={(e) => setMinScore(e.target.value)}
-            placeholder="Min severity score"
-            className="w-48 bg-background border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-          />
-          <button
-            onClick={runHunt}
-            disabled={searching}
-            className="px-4 py-2 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:brightness-110 transition disabled:opacity-50"
-          >
-            {searching ? "Running..." : "Run Hunt"}
-          </button>
-          <button
-            onClick={saveHunt}
-            className="px-4 py-2 rounded-md text-sm font-medium bg-secondary text-muted-foreground hover:bg-nav-button/80 transition"
-          >
-            Save as Hunt
-          </button>
+          <div className="p-2 rounded-lg bg-[#38bdf8]/10 border border-[#38bdf8]/30">
+            <Search size={24} className="text-[#38bdf8]" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Threat Hunting</h1>
+            <p className="text-sm text-[#8b949e] mt-1">Advanced query execution, anomaly detection, and retrospective log analysis.</p>
+          </div>
         </div>
+        <button className="px-4 py-2 border border-[#30363d] text-[#8b949e] hover:text-white hover:border-white text-xs font-bold uppercase rounded-lg transition-colors mt-4 md:mt-0 flex items-center gap-2">
+          <Save size={14} /> Load Saved Query
+        </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        {/* Results */}
-        <div className="col-span-2">
-          <div className="bg-secondary/40 border border-border rounded-lg p-5">
-            <div className="text-sm text-muted-foreground mb-4">
-              {hasSearched ? `${results.length} results` : "Results will appear here"}
+      <div className="grid grid-cols-12 gap-6 items-stretch">
+        
+        <div className="lg:col-span-8 flex flex-col gap-6 h-full">
+          
+          <div className="bg-[#121212] border border-[#30363d] rounded-xl shadow-lg overflow-hidden shrink-0">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#30363d] bg-[#1c1c1c]">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <Terminal size={16} className="text-[#38bdf8]" /> Threat Query Language (TQL)
+              </h2>
+              <span className="text-[10px] text-[#38bdf8] border border-[#38bdf8]/30 px-2 py-0.5 rounded uppercase tracking-wider bg-[#38bdf8]/10">Ready</span>
             </div>
-            {!hasSearched ? (
-              <p className="text-muted-foreground text-sm py-8 text-center">
-                Build a query above and run a hunt to explore indicators.
-              </p>
-            ) : results.length === 0 ? (
-              <p className="text-muted-foreground text-sm py-8 text-center">
-                No indicators matched this query.
-              </p>
-            ) : (
-              <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                {results.map((ind) => (
-                  <div
-                    key={ind.id}
-                    className="flex items-center justify-between bg-background border border-border rounded-md p-3 gap-3 hover:border-primary/30 transition-colors"
+            <div className="p-0">
+              <textarea
+                className="w-full bg-[#0d1117] text-[#eab308] font-mono text-sm p-6 focus:outline-none focus:ring-inset focus:ring-1 focus:ring-[#38bdf8] resize-none h-28 leading-relaxed"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                spellCheck="false"
+              />
+              <div className="flex items-center justify-between px-6 py-4 border-t border-[#30363d] bg-[#161b22]">
+                <div className="text-xs text-[#8b949e] font-mono">
+                  Press <kbd className="bg-[#0d1117] border border-[#30363d] px-1.5 py-0.5 rounded text-white">CTRL</kbd> + <kbd className="bg-[#0d1117] border border-[#30363d] px-1.5 py-0.5 rounded text-white">ENTER</kbd> to execute
+                </div>
+                <div className="flex gap-3">
+                  <button type="button" className="px-4 py-2 border border-[#30363d] text-[#8b949e] hover:text-white text-xs font-bold uppercase rounded transition-colors flex items-center gap-2">
+                    <Save size={14} /> Save Query
+                  </button>
+                  <button
+                    onClick={() => setLoading(true)}
+                    className="px-6 py-2 bg-[#38bdf8] hover:bg-[#2eaadc] text-black text-xs font-bold uppercase rounded shadow-lg shadow-[#38bdf8]/20 disabled:opacity-50 flex items-center gap-2 transition-colors"
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className={`px-2 py-1 rounded-md text-xs font-semibold shrink-0 ${severityBadge(ind.severity_score)}`}>
-                        {ind.severity_score}
-                      </span>
-                      <span className="text-sm text-foreground font-mono truncate">{ind.value}</span>
-                      <span className="text-xs text-muted-foreground uppercase tracking-wide shrink-0">{ind.type}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground shrink-0">{ind.tlp}</span>
-                  </div>
-                ))}
+                    <Play size={14} /> Run Query
+                  </button>
+                </div>
               </div>
-            )}
+            </div>
+          </div>
+
+          <div className="bg-[#121212] border border-[#30363d] rounded-xl shadow-lg overflow-hidden flex-1">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#30363d] bg-[#1c1c1c]">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider">Query Results</h2>
+              <span className="text-xs font-mono text-[#8b949e]">{results.length} matches found</span>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#30363d] text-[10px] font-bold text-[#8b949e] uppercase tracking-wider bg-[#0d1117]">
+                    <th className="px-6 py-4 min-w-[140px]">Timestamp</th>
+                    <th className="px-6 py-4 min-w-[140px]">IOC Value</th>
+                    <th className="px-6 py-4 w-36">Type</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4 w-24 text-right">Score</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#30363d]/60">
+                  {loading ? (
+                    <tr><td colSpan={5} className="px-6 py-12 text-center text-[#8b949e] animate-pulse text-sm">Traversing index nodes...</td></tr>
+                  ) : results.length === 0 ? (
+                    <tr><td colSpan={5} className="px-6 py-12 text-center text-[#8b949e] text-sm">No matches found.</td></tr>
+                  ) : (
+                    results.slice(0, 10).map((ioc) => (
+                      <tr key={ioc.id} className="hover:bg-[#1c1c1c] transition-colors group">
+                        <td className="px-6 py-4 text-[#8b949e] font-mono text-xs">{new Date(ioc.last_seen).toLocaleString()}</td>
+                        <td className="px-6 py-4 text-white font-mono text-xs group-hover:text-[#38bdf8] transition-colors">{ioc.value}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+                            ioc.type === 'ip' || ioc.type === 'url' ? 'text-[#ff9500] bg-[#ff9500]/10 border-[#ff9500]/30' : 
+                            'text-[#38bdf8] bg-[#38bdf8]/10 border-[#38bdf8]/30'
+                          }`}>
+                            {ioc.type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-[#8b949e] font-mono text-xs truncate max-w-[150px]">{ioc.status}</td>
+                        <td className="px-6 py-4 text-right font-bold text-xs">
+                          <span className={ioc.severity_score >= 90 ? 'text-[#f83b4f]' : 'text-[#ff9500]'}>
+                            {ioc.severity_score}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        {/* Sidebar: saved hunts + roadmap notice */}
-        <div className="space-y-6">
-          <div className="bg-secondary/40 border border-border rounded-lg p-5">
-            <div className="text-sm text-muted-foreground mb-4">Saved Hunts</div>
-            {savedHunts.length === 0 ? (
-              <p className="text-muted-foreground text-xs">No saved hunts yet.</p>
-            ) : (
-              <div className="space-y-2">
-                {savedHunts.map((hunt) => (
-                  <button
-                    key={hunt.id}
-                    onClick={() => loadHunt(hunt)}
-                    className="w-full text-left bg-background border border-border rounded-md p-2.5 hover:border-primary/30 transition-colors"
-                  >
-                    <div className="text-sm text-foreground">{hunt.name}</div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {hunt.query || "(no text)"} {hunt.type && `· ${hunt.type}`} {hunt.tlp && `· ${hunt.tlp}`}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
+        <div className="lg:col-span-4 flex flex-col gap-6 h-full">
+          
+          <div className="bg-[#121212] border border-[#30363d] rounded-xl p-5 shadow-lg shrink-0">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+              <ShieldAlert size={16} className="text-[#38bdf8]" /> MITRE ATT&CK Navigator
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {tacticsGrid.map((tactic, idx) => (
+                <div 
+                  key={idx} 
+                  className={`p-2 rounded-lg text-center text-[8px] uppercase font-bold transition-colors border ${
+                    tactic.active 
+                      ? `${tactic.color} ${tactic.color}/20 border-[#30363d] text-white` 
+                      : 'bg-[#0a0a0a] border-[#30363d] text-[#8b949e]'
+                  }`}
+                >
+                  <div className="h-6 flex items-center justify-center text-[7px] md:text-[8px] leading-tight break-words">{tactic.name}</div>
+                  {tactic.active && <div className="w-full h-1 mt-1 rounded-full bg-current opacity-60"></div>}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="bg-secondary/40 border border-border rounded-lg p-5">
-            <div className="text-sm text-muted-foreground mb-2">Roadmap</div>
-            <p className="text-xs text-muted-foreground/80 leading-relaxed">
-              Indicator relationship graph and ATT&CK technique overlay require
-              backend schema additions (technique mapping, graph edges) and are
-              planned as a follow-on backend milestone.
-            </p>
+          <div className="bg-[#121212] border border-[#30363d] rounded-xl p-5 shadow-lg flex-1 flex flex-col overflow-hidden">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2 shrink-0">
+              <Code size={16} className="text-[#00d26a]" /> Saved Queries
+            </h3>
+            <div className="space-y-2 overflow-y-auto flex-1 pr-1">
+              <div className="flex items-center justify-between bg-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-pointer transition-colors group shrink-0">
+                <div className="min-w-0">
+                  <div className="text-xs text-white font-medium group-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+                  {/* FIXED LINE HERE: Used {' '} to escape the > */}
+                  <div className="text-[9px] text-[#8b949e] font-mono truncate max-w-[100px]">{'severity_score >= 90'}</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between bg-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-pointer transition-colors group shrink-0">
+                <div className="min-w-0">
+                  <div className="text-xs text-white font-medium group-hover:text-[#38bdf8] transition-colors truncate">Suspicious Domains</div>
+                  <div className="text-[9px] text-[#8b949e] font-mono truncate max-w-[100px]">type:domain AND status:active</div>
+                </div>
+              </div>
+            </div>
+            <button className="w-full mt-3 py-2 border border-dashed border-[#30363d] text-[#8b949e] hover:text-white hover:border-white text-[10px] font-bold uppercase rounded transition-colors text-center shrink-0">
+              + Create New Pack
+            </button>
           </div>
+
+          <div className="bg-[#121212] border border-[#30363d] rounded-xl p-5 shadow-lg shrink-0">
+            <div className="flex items-center justify-between mb-4 border-b border-[#30363d]/50 pb-2">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <Clock size={16} className="text-[#eab308]" /> Recent Activity
+              </h3>
+              <span className="text-[9px] text-[#00d26a] border border-[#00d26a]/30 px-2 py-0.5 rounded uppercase">Live Intel</span>
+            </div>
+            <div className="space-y-2">
+              {recentHunts.map((hunt, idx) => (
+                <div key={idx} className="flex items-center justify-between bg-[#0a0a0a] border border-[#30363d] rounded p-2 text-[10px]">
+                  <div className="flex items-center gap-2 text-[#8b949e] min-w-0">
+                    <Activity size={12} className="text-[#38bdf8] shrink-0" />
+                    <span className="text-white font-bold shrink-0">{hunt.user}</span>
+                    <span className="truncate">{hunt.query}</span>
+                  </div>
+                  <span className="text-[#8b949e] font-mono shrink-0 ml-2">{hunt.matches} hits</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

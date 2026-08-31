@@ -55,40 +55,42 @@ export default function TrendChart() {
           <LineChart data={formatted}>
             <XAxis
               dataKey="label"
-              stroke="hsl(0 0% 60%)"
-              tick={{ fill: "hsl(0 0% 60%)", fontSize: 11 }}
-              axisLine={{ stroke: "hsl(0 0% 20%)" }}
+              stroke="var(--muted-foreground)"
+              tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+              axisLine={{ stroke: "var(--border)" }}
               tickLine={false}
             />
             <YAxis
-              stroke="hsl(0 0% 60%)"
-              tick={{ fill: "hsl(0 0% 60%)", fontSize: 11 }}
-              axisLine={{ stroke: "hsl(0 0% 20%)" }}
+              stroke="var(--muted-foreground)"
+              tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+              axisLine={{ stroke: "var(--border)" }}
               tickLine={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "hsl(0 0% 12%)",
-                border: "1px solid hsl(0 0% 20%)",
+                backgroundColor: "var(--background)",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
-                color: "hsl(0 0% 96%)",
+                color: "var(--foreground)",
               }}
-              labelStyle={{ color: "hsl(0 0% 60%)" }}
+              labelStyle={{ color: "var(--muted-foreground)" }}
             />
             <Line
               type="monotone"
               dataKey="total"
-              stroke="hsl(119 99% 46%)"
+              stroke="var(--primary)"
               strokeWidth={2}
-              dot={false}
+              dot={{ r: 3, fill: "var(--background)", strokeWidth: 2 }}
+              activeDot={{ r: 5 }}
               name="Total new"
             />
             <Line
               type="monotone"
               dataKey="high_severity"
-              stroke="hsl(0 84% 60%)"
+              stroke="var(--severity-critical)"
               strokeWidth={2}
-              dot={false}
+              dot={{ r: 3, fill: "var(--background)", strokeWidth: 2 }}
+              activeDot={{ r: 5 }}
               name="High severity"
             />
           </LineChart>

@@ -3,6 +3,14 @@ import models
 
 def seed():
     db = SessionLocal()
+    
+    # Check if test indicator already exists
+    existing = db.query(models.Indicator).filter(models.Indicator.value == "185.220.101.4").first()
+    if existing:
+        print("Test indicator already exists, skipping.")
+        db.close()
+        return
+    
     test_indicator = models.Indicator(
         value="185.220.101.4",
         type=models.IndicatorType.ip,

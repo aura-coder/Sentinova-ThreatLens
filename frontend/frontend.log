@@ -1,0 +1,459 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.29.63:3000
+- Environments: .env.local
+✓ Ready in 1690ms
+⚠ Slow filesystem detected. The benchmark took 281ms. If /home/aura/threatlens/frontend/.next/dev is a network drive, consider moving it to a local folder.
+See more: https://nextjs.org/docs/app/guides/local-development
+
+ GET /indicators 200 in 3.4s (next.js: 2.8s, application-code: 554ms)
+ GET /audit-logs 200 in 390ms (next.js: 234ms, application-code: 156ms)
+ GET /indicators 200 in 117ms (next.js: 15ms, application-code: 102ms)
+ GET /audit-logs 200 in 115ms (next.js: 14ms, application-code: 101ms)
+ GET /indicators 200 in 123ms (next.js: 13ms, application-code: 111ms)
+✓ Compiled in 3s
+ GET /indicators 200 in 306ms (next.js: 239ms, application-code: 67ms)
+ GET /indicators 200 in 55ms (next.js: 5ms, application-code: 51ms)
+✓ Compiled in 207ms
+ GET /indicators 200 in 199ms (next.js: 6ms, application-code: 192ms)
+✓ Compiled in 161ms
+✓ Compiled in 121ms
+✓ Compiled in 121ms
+ GET /audit-logs 200 in 107ms (next.js: 32ms, application-code: 74ms)
+ GET /threat-feeds 200 in 198ms (next.js: 108ms, application-code: 90ms)
+ GET /dashboard/threat-hunting 200 in 235ms (next.js: 80ms, application-code: 155ms)
+ GET /indicators 200 in 103ms (next.js: 13ms, application-code: 90ms)
+ GET /dashboard/analyst 200 in 184ms (next.js: 123ms, application-code: 62ms)
+ GET /dashboard/executive 200 in 132ms (next.js: 65ms, application-code: 67ms)
+ GET /dashboard/executive 200 in 341ms (next.js: 221ms, application-code: 120ms)
+✓ Compiled in 0ms
+ GET /dashboard/executive 200 in 153ms (next.js: 70ms, application-code: 84ms)
+ GET /dashboard/executive 200 in 53ms (next.js: 8ms, application-code: 45ms)
+[browser] Uncaught TypeError: can't access property "toLocaleString", data.total is undefined
+    at ExecutiveDashboard (app/dashboard/executive/page.tsx:120:26)
+  118 |             <Target size={20} className="text-[#00d26a]" />
+  119 |           </div>
+> 120 |           <div className="text-3xl font-bold text-[#00d26a]">{data.total.toLocaleString()...
+      |                          ^
+  121 |           <div className="text-[10px] text-[#8b949e]">{data.new_last_24h} new in 24h</div>
+  122 |         </div>
+  123 |       </div>
+ GET /dashboard/executive? 200 in 638ms (next.js: 9ms, application-code: 628ms)
+[browser] Uncaught TypeError: can't access property "toLocaleString", data.total is undefined
+    at ExecutiveDashboard (app/dashboard/executive/page.tsx:120:26)
+  118 |             <Target size={20} className="text-[#00d26a]" />
+  119 |           </div>
+> 120 |           <div className="text-3xl font-bold text-[#00d26a]">{data.total.toLocaleString()...
+      |                          ^
+  121 |           <div className="text-[10px] text-[#8b949e]">{data.new_last_24h} new in 24h</div>
+  122 |         </div>
+  123 |       </div>
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+✓ Compiled in 76ms
+ GET /dashboard/executive 200 in 263ms (next.js: 30ms, application-code: 233ms)
+[browser] Failed to load executive data Error: API error
+    at ExecutiveDashboard.useEffect (app/dashboard/executive/page.tsx:54:28)
+  52 |     apiFetch("/api/v1/dashboard/executive")
+  53 |       .then((res) => {
+> 54 |         if (!res.ok) throw new Error("API error");
+     |                            ^
+  55 |         return res.json();
+  56 |       })
+  57 |       .then((d) => {
+[browser] Uncaught ReferenceError: Fragment is not defined
+    at ExecutiveDashboard/<.children<.children<.children<.children<.children< (app/dashboard/executive/page.tsx:217:18)
+    at ExecutiveDashboard (app/dashboard/executive/page.tsx:216:54)
+  215 |               {["Rare", "Unlikely", "Likely", "Very Likely"].map((col) => <div key={col} ...
+  216 |               {["Critical", "High", "Medium", "Low"].map((row, rIdx) => (
+> 217 |                 <Fragment key={row}>
+      |                  ^
+  218 |                   <div className="p-1 text-right text-[#8b949e] uppercase font-bold pr-1"...
+  219 |                   {[0, 1, 2, 3].map((cIdx) => {
+  220 |                     let val = 0;
+ GET /dashboard/executive 200 in 236ms (next.js: 7ms, application-code: 229ms)
+[browser] Failed to load executive data Error: API error
+    at ExecutiveDashboard.useEffect (app/dashboard/executive/page.tsx:54:28)
+  52 |     apiFetch("/api/v1/dashboard/executive")
+  53 |       .then((res) => {
+> 54 |         if (!res.ok) throw new Error("API error");
+     |                            ^
+  55 |         return res.json();
+  56 |       })
+  57 |       .then((d) => {
+[browser] Uncaught ReferenceError: Fragment is not defined
+    at ExecutiveDashboard/<.children<.children<.children<.children<.children< (app/dashboard/executive/page.tsx:217:18)
+    at ExecutiveDashboard (app/dashboard/executive/page.tsx:216:54)
+  215 |               {["Rare", "Unlikely", "Likely", "Very Likely"].map((col) => <div key={col} ...
+  216 |               {["Critical", "High", "Medium", "Low"].map((row, rIdx) => (
+> 217 |                 <Fragment key={row}>
+      |                  ^
+  218 |                   <div className="p-1 text-right text-[#8b949e] uppercase font-bold pr-1"...
+  219 |                   {[0, 1, 2, 3].map((cIdx) => {
+  220 |                     let val = 0;
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+✓ Compiled in 91ms
+ GET /dashboard/executive 200 in 109ms (next.js: 6ms, application-code: 102ms)
+[browser] Backend response issue, default data dikha raha hoon: API Error: 404 - Not Found (app/dashboard/executive/page.tsx:65:17)
+ GET /dashboard/executive 200 in 257ms (next.js: 7ms, application-code: 250ms)
+✓ Compiled in 117ms
+ GET /dashboard/executive 200 in 123ms (next.js: 9ms, application-code: 115ms)
+✓ Compiled in 3.6s
+ GET /dashboard/executive 200 in 422ms (next.js: 283ms, application-code: 138ms)
+ GET /dashboard/executive 200 in 648ms (next.js: 3ms, application-code: 645ms)
+ GET /dashboard/executive 200 in 104ms (next.js: 5ms, application-code: 99ms)
+✓ Compiled in 326ms
+ GET /dashboard/executive 200 in 522ms (next.js: 404ms, application-code: 118ms)
+ GET /dashboard/executive 200 in 78ms (next.js: 4ms, application-code: 74ms)
+ GET /dashboard/executive 200 in 135ms (next.js: 4ms, application-code: 131ms)
+ GET /dashboard/executive 200 in 84ms (next.js: 3ms, application-code: 81ms)
+ GET /dashboard/executive 200 in 59ms (next.js: 6ms, application-code: 54ms)
+ GET /dashboard/executive 200 in 66ms (next.js: 5ms, application-code: 61ms)
+ GET /dashboard/executive 200 in 77ms (next.js: 9ms, application-code: 67ms)
+ GET /dashboard/executive 200 in 50ms (next.js: 4ms, application-code: 47ms)
+ GET /dashboard/analyst 200 in 92ms (next.js: 41ms, application-code: 52ms)
+ GET /dashboard/executive 200 in 100ms (next.js: 7ms, application-code: 92ms)
+ GET /dashboard/incident-responder 200 in 194ms (next.js: 106ms, application-code: 88ms)
+[browser] Each child in a list should have a unique "key" prop.
+
+Check the render method of `div`. It was passed a child from IncidentResponderDashboard. See https://react.dev/link/warning-keys for more information. 
+ GET /indicators 200 in 162ms (next.js: 72ms, application-code: 90ms)
+ GET /dashboard/executive 200 in 130ms (next.js: 11ms, application-code: 120ms)
+✓ Compiled in 463ms
+ GET /dashboard/executive 200 in 319ms (next.js: 224ms, application-code: 95ms)
+ GET /dashboard/executive 200 in 55ms (next.js: 3ms, application-code: 52ms)
+ GET /dashboard/executive 200 in 76ms (next.js: 4ms, application-code: 71ms)
+ GET /dashboard/executive 200 in 73ms (next.js: 5ms, application-code: 68ms)
+ GET /dashboard/executive 200 in 46ms (next.js: 3ms, application-code: 43ms)
+ GET /dashboard/executive 200 in 79ms (next.js: 4ms, application-code: 75ms)
+ GET /dashboard/executive 200 in 52ms (next.js: 6ms, application-code: 46ms)
+ GET /dashboard/executive 200 in 57ms (next.js: 5ms, application-code: 52ms)
+ GET /dashboard/executive 200 in 81ms (next.js: 5ms, application-code: 76ms)
+ GET /dashboard/executive 200 in 63ms (next.js: 5ms, application-code: 58ms)
+✓ Compiled in 1870ms
+ GET /dashboard/executive 200 in 251ms (next.js: 159ms, application-code: 92ms)
+ GET /dashboard/executive 200 in 73ms (next.js: 4ms, application-code: 69ms)
+ GET /dashboard/executive 200 in 198ms (next.js: 8ms, application-code: 190ms)
+ GET /dashboard/executive 200 in 44ms (next.js: 3ms, application-code: 41ms)
+ GET /dashboard/executive 200 in 42ms (next.js: 4ms, application-code: 38ms)
+ GET /dashboard/executive 200 in 50ms (next.js: 4ms, application-code: 47ms)
+ GET /dashboard/executive 200 in 54ms (next.js: 4ms, application-code: 50ms)
+ GET /dashboard/executive 200 in 60ms (next.js: 4ms, application-code: 56ms)
+ GET /dashboard/executive 200 in 47ms (next.js: 3ms, application-code: 44ms)
+✓ Compiled in 688ms
+✓ Compiled in 112ms
+ GET /dashboard/executive 200 in 566ms (next.js: 12ms, application-code: 554ms)
+✓ Compiled in 249ms
+✓ Compiled in 416ms
+ GET /dashboard/executive 200 in 454ms (next.js: 294ms, application-code: 160ms)
+[browser] Uncaught ReferenceError: ArrowDown is not defined
+    at ExecutiveDashboard/<.children<.children<.children< (app/dashboard/executive/page.tsx:157:62)
+    at ExecutiveDashboard (app/dashboard/executive/page.tsx:137:25)
+  155 | ...div>
+  156 | ...dx < pipelineData.length - 1 && (
+> 157 | ...<div className="flex justify-center my-1"><ArrowDown size={12} className="text-[#8b949...
+      |                                               ^
+  158 | ...
+  159 | ...v>
+  160 | ...
+ GET /dashboard/executive 200 in 51ms (next.js: 4ms, application-code: 47ms)
+ GET /dashboard/executive? 200 in 425ms (next.js: 10ms, application-code: 414ms)
+[browser] Uncaught ReferenceError: ArrowDown is not defined
+    at ExecutiveDashboard/<.children<.children<.children< (app/dashboard/executive/page.tsx:157:62)
+    at ExecutiveDashboard (app/dashboard/executive/page.tsx:137:25)
+  155 | ...div>
+  156 | ...dx < pipelineData.length - 1 && (
+> 157 | ...<div className="flex justify-center my-1"><ArrowDown size={12} className="text-[#8b949...
+      |                                               ^
+  158 | ...
+  159 | ...v>
+  160 | ...
+ GET /dashboard/executive 200 in 406ms (next.js: 129ms, application-code: 277ms)
+✓ Compiled in 165ms
+ GET /dashboard/executive 200 in 258ms (next.js: 155ms, application-code: 103ms)
+✓ Compiled in 508ms
+ GET /dashboard/executive 200 in 369ms (next.js: 294ms, application-code: 75ms)
+ GET /dashboard/executive 200 in 50ms (next.js: 3ms, application-code: 46ms)
+ GET /dashboard/executive 200 in 26ms (next.js: 6ms, application-code: 20ms)
+ GET /dashboard/executive 200 in 84ms (next.js: 6ms, application-code: 78ms)
+✓ Compiled in 301ms
+ GET /dashboard/executive 200 in 301ms (next.js: 195ms, application-code: 106ms)
+ GET /dashboard/executive 200 in 71ms (next.js: 4ms, application-code: 67ms)
+✓ Compiled in 769ms
+ GET /dashboard/executive 200 in 260ms (next.js: 151ms, application-code: 109ms)
+ GET /dashboard/executive 200 in 48ms (next.js: 4ms, application-code: 44ms)
+✓ Compiled in 44ms
+ GET /dashboard/executive 200 in 362ms (next.js: 237ms, application-code: 125ms)
+ GET /dashboard/executive 200 in 172ms (next.js: 11ms, application-code: 161ms)
+ GET /dashboard/executive 200 in 80ms (next.js: 4ms, application-code: 76ms)
+ GET /dashboard/executive 200 in 75ms (next.js: 5ms, application-code: 70ms)
+ GET /dashboard/executive 200 in 57ms (next.js: 3ms, application-code: 53ms)
+ GET /dashboard/executive 200 in 82ms (next.js: 5ms, application-code: 77ms)
+ GET /dashboard/executive 200 in 147ms (next.js: 6ms, application-code: 140ms)
+ GET /dashboard/executive 200 in 68ms (next.js: 5ms, application-code: 63ms)
+ GET /dashboard/executive 200 in 77ms (next.js: 12ms, application-code: 66ms)
+ GET /dashboard/incident-responder 200 in 164ms (next.js: 66ms, application-code: 98ms)
+ GET /dashboard/executive 200 in 93ms (next.js: 9ms, application-code: 84ms)
+ GET /dashboard/incident-responder 200 in 77ms (next.js: 7ms, application-code: 69ms)
+ GET /dashboard/analyst 200 in 66ms (next.js: 29ms, application-code: 38ms)
+ GET /dashboard/executive 200 in 76ms (next.js: 4ms, application-code: 72ms)
+ GET /dashboard/analyst 200 in 99ms (next.js: 8ms, application-code: 91ms)
+ GET /dashboard/executive 200 in 95ms (next.js: 10ms, application-code: 85ms)
+ GET /dashboard/incident-responder 200 in 97ms (next.js: 9ms, application-code: 88ms)
+ GET /dashboard/executive 200 in 86ms (next.js: 8ms, application-code: 78ms)
+ GET /dashboard/incident-responder 200 in 94ms (next.js: 9ms, application-code: 85ms)
+✓ Compiled in 272ms
+ GET /dashboard/incident-responder 200 in 487ms (next.js: 9ms, application-code: 478ms)
+✓ Compiled in 599ms
+ GET /dashboard/incident-responder 200 in 272ms (next.js: 160ms, application-code: 112ms)
+ GET /dashboard/incident-responder 200 in 55ms (next.js: 4ms, application-code: 51ms)
+ GET /dashboard/incident-responder 200 in 275ms (next.js: 6ms, application-code: 269ms)
+✓ Compiled in 129ms
+ GET /dashboard/incident-responder 200 in 250ms (next.js: 10ms, application-code: 239ms)
+[browser] ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed 
+[browser] ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed 
+ GET /dashboard/incident-responder 500 in 939ms (next.js: 396ms, application-code: 543ms)
+ GET /dashboard/incident-responder 500 in 26ms (next.js: 8ms, application-code: 18ms)
+[browser] ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed 
+[browser] ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed 
+[browser] Uncaught Error: ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed
+
+
+    at <unknown> (Error: ./app/dashboard/threat-hunting/page.tsx:202:110)
+    at <unknown> (Error: (./app/dashboard/threat-hunting/page.tsx:202:110)
+[browser] ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed 
+ GET /dashboard/incident-responder 500 in 27ms (next.js: 6ms, application-code: 21ms)
+[browser] Uncaught Error: ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed
+
+
+    at <unknown> (Error: ./app/dashboard/threat-hunting/page.tsx:202:110)
+    at <unknown> (Error: (./app/dashboard/threat-hunting/page.tsx:202:110)
+[browser] ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed 
+[browser] ./app/dashboard/threat-hunting/page.tsx:202:110
+Unexpected token. Did you mean `{'>'}` or `&gt;`?
+  200 | ...
+  201 | ...roup-hover:text-[#38bdf8] transition-colors truncate">High Severity IOCs</div>
+> 202 | ...ono truncate max-w-[100px]">severity_score >= 90</div>
+      |                                               ^
+  203 | ...
+  204 | ...
+  205 | ...-[#0a0a0a] border border-[#30363d] rounded-lg p-3 hover:border-[#38bdf8]/50 cursor-poi...
+
+Parsing ecmascript source code failed 
+✓ Compiled in 183ms
+ GET /dashboard/incident-responder 200 in 716ms (next.js: 324ms, application-code: 393ms)
+ GET /dashboard/threat-hunting 200 in 359ms (next.js: 300ms, application-code: 59ms)
+ GET /dashboard/threat-hunting 200 in 313ms (next.js: 9ms, application-code: 304ms)
+ GET /threat-feeds 200 in 154ms (next.js: 68ms, application-code: 86ms)
+ GET /audit-logs 200 in 148ms (next.js: 73ms, application-code: 76ms)
+ GET /dashboard/analyst 200 in 195ms (next.js: 71ms, application-code: 125ms)
+ GET /dashboard/executive 200 in 136ms (next.js: 59ms, application-code: 77ms)
+ GET /dashboard/incident-responder 200 in 109ms (next.js: 26ms, application-code: 82ms)
+ GET /indicators 200 in 142ms (next.js: 81ms, application-code: 61ms)
+ GET /dashboard/threat-hunting 200 in 43ms (next.js: 4ms, application-code: 39ms)
+ GET /threat-feeds 200 in 79ms (next.js: 7ms, application-code: 72ms)
+ GET /audit-logs 200 in 91ms (next.js: 8ms, application-code: 83ms)
+ GET /audit-logs 200 in 147ms (next.js: 6ms, application-code: 141ms)
+ GET /audit-logs 200 in 158ms (next.js: 6ms, application-code: 152ms)
+ GET /login 200 in 97ms (next.js: 50ms, application-code: 47ms)
+ GET /dashboard/analyst 200 in 94ms (next.js: 6ms, application-code: 89ms)
+ GET /audit-logs 200 in 36ms (next.js: 4ms, application-code: 32ms)
+✓ Compiled in 1778ms
+ GET /audit-logs 200 in 537ms (next.js: 206ms, application-code: 330ms)
+✓ Compiled in 412ms
+✓ Compiled in 656ms
+ GET /audit-logs 200 in 319ms (next.js: 194ms, application-code: 125ms)
+ GET /audit-logs 200 in 278ms (next.js: 9ms, application-code: 269ms)
+✓ Compiled in 151ms
+ GET /dashboard/analyst 200 in 66ms (next.js: 26ms, application-code: 41ms)
+ GET /dashboard/executive 200 in 93ms (next.js: 48ms, application-code: 44ms)
+ GET /dashboard/incident-responder 200 in 108ms (next.js: 68ms, application-code: 40ms)
+ GET /dashboard/executive 200 in 91ms (next.js: 7ms, application-code: 84ms)
+ GET /dashboard/incident-responder 200 in 127ms (next.js: 11ms, application-code: 117ms)
+ GET /dashboard/analyst 200 in 42ms (next.js: 3ms, application-code: 39ms)
+ GET /dashboard/incident-responder 200 in 120ms (next.js: 8ms, application-code: 112ms)
+ GET /dashboard/analyst 200 in 53ms (next.js: 4ms, application-code: 49ms)
+✓ Compiled in 232ms
+✓ Compiled in 253ms
+✓ Compiled in 181ms
+ GET /dashboard/analyst 200 in 240ms (next.js: 162ms, application-code: 78ms)
+ GET /dashboard/analyst 200 in 53ms (next.js: 5ms, application-code: 48ms)
+ GET /dashboard/executive 200 in 190ms (next.js: 119ms, application-code: 71ms)
+ GET /dashboard/incident-responder 200 in 138ms (next.js: 36ms, application-code: 103ms)
+ GET /indicators 200 in 156ms (next.js: 65ms, application-code: 91ms)
+ GET /dashboard/analyst 200 in 93ms (next.js: 8ms, application-code: 85ms)
+✓ Compiled in 485ms
+ GET /dashboard/analyst 200 in 250ms (next.js: 182ms, application-code: 67ms)
+ GET /dashboard/analyst 200 in 265ms (next.js: 4ms, application-code: 260ms)
+ GET /dashboard/executive 200 in 84ms (next.js: 31ms, application-code: 53ms)
+ GET /dashboard/incident-responder 200 in 154ms (next.js: 35ms, application-code: 119ms)
+ GET /indicators 200 in 169ms (next.js: 59ms, application-code: 110ms)
+ GET /dashboard/threat-hunting 200 in 140ms (next.js: 57ms, application-code: 82ms)
+ GET /threat-feeds 200 in 66ms (next.js: 32ms, application-code: 34ms)
+ GET /audit-logs 200 in 61ms (next.js: 25ms, application-code: 37ms)
+ GET /dashboard/analyst 200 in 73ms (next.js: 4ms, application-code: 68ms)
+✓ Compiled in 305ms
+ GET /dashboard/analyst 200 in 303ms (next.js: 190ms, application-code: 113ms)
+ GET /dashboard/analyst 200 in 55ms (next.js: 6ms, application-code: 49ms)
+ GET /dashboard/executive 200 in 246ms (next.js: 88ms, application-code: 157ms)
+ GET /dashboard/analyst 200 in 40ms (next.js: 4ms, application-code: 36ms)
+ GET /dashboard/executive 200 in 88ms (next.js: 8ms, application-code: 80ms)
+ GET /dashboard/analyst 200 in 50ms (next.js: 10ms, application-code: 40ms)
+ GET /dashboard/executive 200 in 43ms (next.js: 3ms, application-code: 40ms)
+✓ Compiled in 218ms
+ GET /dashboard/executive 200 in 427ms (next.js: 12ms, application-code: 414ms)
+✓ Compiled in 130ms
+ GET /dashboard/executive 200 in 333ms (next.js: 233ms, application-code: 100ms)
+ GET /dashboard/executive 200 in 54ms (next.js: 7ms, application-code: 46ms)
+✓ Compiled in 416ms
+ GET /dashboard/executive 200 in 230ms (next.js: 149ms, application-code: 81ms)
+ GET /dashboard/executive 200 in 311ms (next.js: 5ms, application-code: 306ms)
+✓ Compiled in 295ms
+ GET /dashboard/executive 200 in 220ms (next.js: 128ms, application-code: 92ms)
+ GET /dashboard/executive 200 in 129ms (next.js: 9ms, application-code: 120ms)
+✓ Compiled in 273ms
+ GET /dashboard/executive 200 in 207ms (next.js: 134ms, application-code: 72ms)
+ GET /dashboard/executive 200 in 47ms (next.js: 4ms, application-code: 44ms)
+ GET /dashboard/executive 200 in 401ms (next.js: 272ms, application-code: 129ms)
+✓ Compiled in 0ms
+ GET /dashboard/executive 200 in 59ms (next.js: 6ms, application-code: 53ms)
+ GET /dashboard/executive 200 in 48ms (next.js: 4ms, application-code: 44ms)
+ GET /dashboard/executive 200 in 67ms (next.js: 4ms, application-code: 63ms)
+ GET /dashboard/executive 200 in 85ms (next.js: 6ms, application-code: 79ms)
+ GET /dashboard/executive 200 in 133ms (next.js: 6ms, application-code: 127ms)
+ GET /dashboard/executive 200 in 51ms (next.js: 4ms, application-code: 47ms)
+ GET /dashboard/executive 200 in 45ms (next.js: 3ms, application-code: 42ms)
+ GET /dashboard/executive 200 in 46ms (next.js: 4ms, application-code: 42ms)
+ GET /dashboard/executive 200 in 41ms (next.js: 3ms, application-code: 38ms)
+ GET /dashboard/executive 200 in 38ms (next.js: 3ms, application-code: 36ms)
+ GET /dashboard/executive 200 in 46ms (next.js: 3ms, application-code: 42ms)
+ GET /dashboard/executive 200 in 101ms (next.js: 13ms, application-code: 88ms)
+ GET /dashboard/executive 200 in 42ms (next.js: 4ms, application-code: 38ms)
+ GET /dashboard/executive 200 in 43ms (next.js: 4ms, application-code: 39ms)
+ GET /dashboard/executive 200 in 54ms (next.js: 5ms, application-code: 50ms)
+ GET /dashboard/executive 200 in 39ms (next.js: 3ms, application-code: 37ms)
+ GET /dashboard/executive 200 in 48ms (next.js: 3ms, application-code: 44ms)
+ GET /dashboard/executive 200 in 43ms (next.js: 3ms, application-code: 39ms)
+ GET /dashboard/executive 200 in 42ms (next.js: 5ms, application-code: 37ms)
+ GET /dashboard/executive 200 in 59ms (next.js: 4ms, application-code: 55ms)
+ GET /dashboard/executive 200 in 55ms (next.js: 4ms, application-code: 51ms)
+ GET /dashboard/executive 200 in 41ms (next.js: 3ms, application-code: 38ms)
+ GET /dashboard/executive 200 in 44ms (next.js: 4ms, application-code: 40ms)
+ GET /dashboard/executive 200 in 57ms (next.js: 6ms, application-code: 51ms)
+ GET /dashboard/executive 200 in 108ms (next.js: 4ms, application-code: 104ms)
+ GET /dashboard/executive 200 in 49ms (next.js: 4ms, application-code: 45ms)
+ GET /dashboard/executive 200 in 48ms (next.js: 4ms, application-code: 44ms)
+ GET /dashboard/executive 200 in 46ms (next.js: 6ms, application-code: 39ms)
+ GET /dashboard/executive 200 in 54ms (next.js: 3ms, application-code: 51ms)
+ GET /dashboard/executive 200 in 296ms (next.js: 4ms, application-code: 292ms)
+ GET /entities 200 in 1923ms (next.js: 1845ms, application-code: 78ms)
+ GET /entities 200 in 81ms (next.js: 13ms, application-code: 68ms)
+ GET /dashboard/threat-hunting 200 in 141ms (next.js: 32ms, application-code: 109ms)
+ GET /threat-feeds 200 in 144ms (next.js: 66ms, application-code: 78ms)
+ GET /entities 200 in 50ms (next.js: 6ms, application-code: 44ms)
+ GET /audit-logs 200 in 73ms (next.js: 23ms, application-code: 50ms)
+ GET /threat-feeds 200 in 81ms (next.js: 7ms, application-code: 75ms)
+ GET /dashboard/analyst 200 in 72ms (next.js: 32ms, application-code: 40ms)
+✓ Compiled in 298ms
+ GET /dashboard/analyst 200 in 307ms (next.js: 9ms, application-code: 298ms)
+✓ Compiled in 241ms
+✓ Compiled in 89ms
+ GET /dashboard/analyst 200 in 221ms (next.js: 8ms, application-code: 213ms)
+ GET /dashboard/executive 200 in 110ms (next.js: 11ms, application-code: 99ms)
+ GET /dashboard/incident-responder 200 in 64ms (next.js: 25ms, application-code: 39ms)
+ GET /indicators 200 in 168ms (next.js: 76ms, application-code: 92ms)
+ GET /entities 200 in 88ms (next.js: 7ms, application-code: 81ms)
+ GET /dashboard/threat-hunting 200 in 98ms (next.js: 8ms, application-code: 90ms)
+ GET /threat-feeds 200 in 80ms (next.js: 9ms, application-code: 71ms)
+ GET /audit-logs 200 in 103ms (next.js: 13ms, application-code: 90ms)
+ GET /threat-feeds 200 in 129ms (next.js: 15ms, application-code: 114ms)
+ GET /audit-logs 200 in 100ms (next.js: 9ms, application-code: 92ms)
+ GET /threat-feeds 200 in 91ms (next.js: 6ms, application-code: 85ms)
+ GET /audit-logs 200 in 60ms (next.js: 4ms, application-code: 56ms)
+ GET /threat-feeds 200 in 30ms (next.js: 2ms, application-code: 28ms)
+ GET /audit-logs 200 in 84ms (next.js: 6ms, application-code: 78ms)
+ GET /dashboard/analyst 200 in 81ms (next.js: 7ms, application-code: 74ms)
+[?25h

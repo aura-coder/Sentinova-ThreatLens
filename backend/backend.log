@@ -1,0 +1,2330 @@
+INFO:     Will watch for changes in these directories: ['/home/aura/threatlens/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [14857] using StatReload
+INFO:     Started server process [14870]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:60932 - "OPTIONS /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60932 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40734 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40750 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40734 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 128, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:40750 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 128, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:50474 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50474 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47452 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47460 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47452 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 128, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:47460 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 128, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:40248 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40248 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41268 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33236 - "OPTIONS /api/v1/indicators?page=2&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33236 - "GET /api/v1/indicators?page=2&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59178 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44738 - "GET /api/v1/indicators?page=2&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44738 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57922 - "OPTIONS /api/v1/indicators?page=31&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57922 - "GET /api/v1/indicators?page=31&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46972 - "OPTIONS /api/v1/indicators?page=11&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46972 - "GET /api/v1/indicators?page=11&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41214 - "OPTIONS /api/v1/indicators?page=10&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41214 - "GET /api/v1/indicators?page=10&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58362 - "OPTIONS /api/v1/indicators?page=554&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58362 - "GET /api/v1/indicators?page=554&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47978 - "OPTIONS /api/v1/indicators?page=55&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47978 - "GET /api/v1/indicators?page=55&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57110 - "OPTIONS /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57110 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44184 - "GET /api/v1/indicators?page=55&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44184 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54396 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54396 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 128, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:44184 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 128, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:54402 - "OPTIONS /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54402 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54402 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44888 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44888 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46326 - "OPTIONS /api/v1/indicators?page=100&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46326 - "GET /api/v1/indicators?page=100&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48998 - "OPTIONS /api/v1/indicators?page=555&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48998 - "GET /api/v1/indicators?page=555&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53540 - "OPTIONS /api/v1/indicators?page=1&page_size=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53540 - "GET /api/v1/indicators?page=1&page_size=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58632 - "OPTIONS /api/v1/indicators?page=1&page_size=25 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58632 - "GET /api/v1/indicators?page=1&page_size=25 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44276 - "OPTIONS /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44276 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44276 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58916 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58916 - "GET /api/v1/dashboard/executive HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58916 - "GET /api/v1/dashboard/executive HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53142 - "GET /api/v1/dashboard/executive HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53142 - "GET /api/v1/dashboard/executive HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:39654 - "GET /api/v1/dashboard/executive HTTP/1.1" 404 Not Found
+WARNING:  StatReload detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14870]
+INFO:     Started server process [23267]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:40854 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58110 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52656 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52656 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47694 - "OPTIONS /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47694 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47694 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42994 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42994 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38012 - "OPTIONS /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38012 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38012 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38012 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38012 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46618 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46618 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41786 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56858 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38848 - "OPTIONS /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38848 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38848 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38856 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38856 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38856 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38856 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38856 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42418 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42418 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34892 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59508 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60844 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36830 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60446 - "OPTIONS /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60446 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60446 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60446 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60446 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60446 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38152 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38152 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "OPTIONS /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49774 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49788 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 93, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:49774 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 93, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:46014 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46014 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "OPTIONS /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52292 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37190 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 93, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:52292 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 93, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+WARNING:  StatReload detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [23267]
+INFO:     Started server process [50539]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:54638 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54638 - "GET /api/v1/audit-logs HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 96, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 2683, in app
+    await route.handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 1266, in handle
+    await super().handle(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 150, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 136, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 690, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/fastapi/routing.py", line 346, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/starlette/concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/home/aura/.local/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
+    result = context.run(func, *args)
+  File "/home/aura/threatlens/backend/main.py", line 100, in list_audit_logs
+    logs = (db.query(models.AuditLog, models.User.email).join(models.User, models.AuditLog.user_id == models.User.id, isouter=True).order_by(desc(models.AuditLog.created_at)).limit(500).all())
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2711, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/aura/.local/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedTable) relation "audit_logs" does not exist
+LINE 2: FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id ...
+             ^
+
+[SQL: SELECT audit_logs.id AS audit_logs_id, audit_logs.user_id AS audit_logs_user_id, audit_logs.actor_username AS audit_logs_actor_username, audit_logs.action AS audit_logs_action, audit_logs.resource_type AS audit_logs_resource_type, audit_logs.resource_id AS audit_logs_resource_id, audit_logs.details AS audit_logs_details, audit_logs.status AS audit_logs_status, audit_logs.created_at AS audit_logs_created_at, users.email AS users_email 
+FROM audit_logs LEFT OUTER JOIN users ON audit_logs.user_id = users.id ORDER BY audit_logs.created_at DESC 
+ LIMIT %(param_1)s]
+[parameters: {'param_1': 500}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:     127.0.0.1:37814 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37814 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43546 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53838 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53854 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53854 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53854 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53854 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60300 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49472 - "OPTIONS /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49472 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49472 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36584 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36584 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36584 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36584 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36584 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36584 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35316 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35316 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "OPTIONS /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60136 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44048 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48424 - "OPTIONS /api/v1/indicators?page=1&page_size=5&type=&status= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48424 - "GET /api/v1/indicators?page=1&page_size=5&type=&status= HTTP/1.1" 422 Unprocessable Content
+INFO:     127.0.0.1:48424 - "GET /api/v1/indicators?page=1&page_size=5&type=&status= HTTP/1.1" 422 Unprocessable Content
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "OPTIONS /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36820 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "OPTIONS /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54852 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43962 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43962 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43088 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38632 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38632 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60518 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60518 - "OPTIONS /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60518 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60518 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "OPTIONS /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "OPTIONS /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57164 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "OPTIONS /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/executive HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "OPTIONS /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/indicators?page=1&page_size=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/feeds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/audit-logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57624 - "GET /api/v1/dashboard/analyst HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [50539]
+INFO:     Stopping reloader process [14857]
