@@ -4,8 +4,6 @@
 
 Built based on a detailed Product Requirements Document (PRD) adhering to STIX 2.1, TAXII 2.1, MITRE ATT&CK, and TLP standards.
 
-![Dashboard Preview](https://via.placeholder.com/1200x600?text=ThreatLens+SOC+Dashboard)
-
 ---
 
 ## 🚀 Key Features
@@ -37,6 +35,13 @@ Built based on a detailed Product Requirements Document (PRD) adhering to STIX 2
 ```text
 threatlens/
 ├── backend/               # FastAPI application, workers, models
+│   ├── Dockerfile         # Backend Docker setup
+│   └── requirements.txt
 ├── frontend/              # Next.js application (App Router)
-├── docker-compose.yml     # Orchestrates full stack
+│   ├── Dockerfile         # Frontend Docker setup
+│   └── package.json
+├── docker-compose.yml     # Orchestrates full stack (DB, Redis, ES, API, UI)
+├── install.sh             # One-time setup script (installs everything)
+├── start.sh               # Starts all services (Docker + Backend + Frontend)
+├── stop.sh                # Stops all services
 └── README.md
